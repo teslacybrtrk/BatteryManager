@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FE8E6D802C93E415002F3DCB /* SMCKit.c in Sources */ = {isa = PBXBuildFile; fileRef = FE8E6D7F2C93E415002F3DCB /* SMCKit.c */; };
 		FEB902272C92A71700A2A134 /* BatteryManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902262C92A71700A2A134 /* BatteryManagerApp.swift */; };
 		FEB902292C92A71700A2A134 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902282C92A71700A2A134 /* ContentView.swift */; };
 		FEB9022B2C92A71800A2A134 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FEB9022A2C92A71800A2A134 /* Assets.xcassets */; };
@@ -14,6 +15,8 @@
 		FEB902392C92A71800A2A134 /* BatteryManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902382C92A71800A2A134 /* BatteryManagerTests.swift */; };
 		FEB902432C92A71800A2A134 /* BatteryManagerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902422C92A71800A2A134 /* BatteryManagerUITests.swift */; };
 		FEB902452C92A71800A2A134 /* BatteryManagerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902442C92A71800A2A134 /* BatteryManagerUITestsLaunchTests.swift */; };
+		FEB902592C92B6BB00A2A134 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902582C92B6BB00A2A134 /* AppDelegate.swift */; };
+		FEB9025C2C92B7C900A2A134 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FEB9025B2C92B7C900A2A134 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +37,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FE8E6D7D2C93E414002F3DCB /* BatteryManager-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BatteryManager-Bridging-Header.h"; sourceTree = "<group>"; };
+		FE8E6D7E2C93E415002F3DCB /* SMCKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMCKit.h; sourceTree = "<group>"; };
+		FE8E6D7F2C93E415002F3DCB /* SMCKit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SMCKit.c; sourceTree = "<group>"; };
 		FEB902232C92A71700A2A134 /* BatteryManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEB902262C92A71700A2A134 /* BatteryManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryManagerApp.swift; sourceTree = "<group>"; };
 		FEB902282C92A71700A2A134 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -45,6 +51,9 @@
 		FEB9023E2C92A71800A2A134 /* BatteryManagerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BatteryManagerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEB902422C92A71800A2A134 /* BatteryManagerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryManagerUITests.swift; sourceTree = "<group>"; };
 		FEB902442C92A71800A2A134 /* BatteryManagerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryManagerUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		FEB902552C92B16900A2A134 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FEB902582C92B6BB00A2A134 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		FEB9025B2C92B7C900A2A134 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEB9025C2C92B7C900A2A134 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +89,7 @@
 				FEB902372C92A71800A2A134 /* BatteryManagerTests */,
 				FEB902412C92A71800A2A134 /* BatteryManagerUITests */,
 				FEB902242C92A71700A2A134 /* Products */,
+				FEB9025A2C92B7C900A2A134 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -95,11 +106,16 @@
 		FEB902252C92A71700A2A134 /* BatteryManager */ = {
 			isa = PBXGroup;
 			children = (
+				FEB902552C92B16900A2A134 /* Info.plist */,
 				FEB902262C92A71700A2A134 /* BatteryManagerApp.swift */,
 				FEB902282C92A71700A2A134 /* ContentView.swift */,
+				FEB902582C92B6BB00A2A134 /* AppDelegate.swift */,
 				FEB9022A2C92A71800A2A134 /* Assets.xcassets */,
 				FEB9022F2C92A71800A2A134 /* BatteryManager.entitlements */,
 				FEB9022C2C92A71800A2A134 /* Preview Content */,
+				FE8E6D7E2C93E415002F3DCB /* SMCKit.h */,
+				FE8E6D7F2C93E415002F3DCB /* SMCKit.c */,
+				FE8E6D7D2C93E414002F3DCB /* BatteryManager-Bridging-Header.h */,
 			);
 			path = BatteryManager;
 			sourceTree = "<group>";
@@ -127,6 +143,14 @@
 				FEB902442C92A71800A2A134 /* BatteryManagerUITestsLaunchTests.swift */,
 			);
 			path = BatteryManagerUITests;
+			sourceTree = "<group>";
+		};
+		FEB9025A2C92B7C900A2A134 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FEB9025B2C92B7C900A2A134 /* IOKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,6 +221,7 @@
 				TargetAttributes = {
 					FEB902222C92A71700A2A134 = {
 						CreatedOnToolsVersion = 15.4;
+						LastSwiftMigration = 1540;
 					};
 					FEB902332C92A71800A2A134 = {
 						CreatedOnToolsVersion = 15.4;
@@ -259,6 +284,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE8E6D802C93E415002F3DCB /* SMCKit.c in Sources */,
+				FEB902592C92B6BB00A2A134 /* AppDelegate.swift in Sources */,
 				FEB902292C92A71700A2A134 /* ContentView.swift in Sources */,
 				FEB902272C92A71700A2A134 /* BatteryManagerApp.swift in Sources */,
 			);
@@ -420,6 +447,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BatteryManager/BatteryManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -429,6 +457,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BatteryManager/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -438,6 +467,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Self.BatteryManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "BatteryManager/BatteryManager-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -447,6 +478,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BatteryManager/BatteryManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -456,6 +488,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BatteryManager/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -465,6 +498,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Self.BatteryManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "BatteryManager/BatteryManager-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

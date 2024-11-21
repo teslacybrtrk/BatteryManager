@@ -1,0 +1,41 @@
+# Xcode
+## User settings
+xcuserdata/
+*.xcuserstate
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+Packages/
+Package.pins
+Package.resolved
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# Carthage
+Carthage/Build/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Mac OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Obj-C/Swift specific
+*.hmap
+*.ipa
+*.xcuserstate
+
+# App Code
+.idea/
