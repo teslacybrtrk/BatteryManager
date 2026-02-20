@@ -54,18 +54,24 @@ final class BatteryService {
         let stdMax = getInt("MaxCapacity") ?? 0
         let stdCurrent = getInt("CurrentCapacity") ?? 0
 
-        if let rawMax, let rawCurrent {
-            // Apple Silicon with raw keys available
+        if let rawMax {
+            // Apple Silicon: use raw mAh for max capacity
             info.maxCapacity = rawMax
-            info.currentCapacity = rawCurrent
         } else if info.designCapacity > 0 && stdMax > 0 && stdMax <= 110 {
-            // Apple Silicon without raw keys: stdMax is a percentage
-            // Estimate mAh from percentage and design capacity
+            // Apple Silicon without raw key: stdMax is a percentage, estimate mAh
             info.maxCapacity = Int(Double(info.designCapacity) * Double(stdMax) / 100.0)
-            info.currentCapacity = Int(Double(info.maxCapacity) * Double(stdCurrent) / Double(stdMax))
         } else {
-            // Intel: MaxCapacity/CurrentCapacity are already mAh
+            // Intel: MaxCapacity is already mAh
             info.maxCapacity = stdMax
+        }
+
+        if let rawCurrent {
+            info.currentCapacity = rawCurrent
+        } else if info.maxCapacity > 0 && stdMax > 0 {
+            // Calculate mAh from charge percentage and known max mAh
+            let chargePercent = Double(stdCurrent) / Double(stdMax)
+            info.currentCapacity = Int(Double(info.maxCapacity) * chargePercent)
+        } else {
             info.currentCapacity = stdCurrent
         }
         info.voltage = Double(getInt("Voltage") ?? 0) / 1000.0
