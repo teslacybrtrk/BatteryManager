@@ -280,6 +280,7 @@ struct SettingsToggle: View {
         Toggle(title, isOn: $isOn)
             .toggleStyle(.switch)
             .font(.system(size: 11))
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -311,6 +312,7 @@ struct SettingsToggleWithInfo: View {
                     .frame(width: 200)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
