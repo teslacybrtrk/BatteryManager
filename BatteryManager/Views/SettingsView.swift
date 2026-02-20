@@ -200,7 +200,7 @@ struct SettingsView: View {
                                     .font(.system(size: 10))
                                     .foregroundStyle(.tertiary)
                                 Spacer()
-                                Text(lastCheck, style: .relative)
+                                Text(Self.formatCheckDate(lastCheck))
                                     .font(.system(size: 10))
                                     .foregroundStyle(.tertiary)
                             }
@@ -214,6 +214,18 @@ struct SettingsView: View {
                                 Text("Update available")
                                     .font(.system(size: 11, weight: .medium))
                                     .foregroundStyle(.blue)
+                                Spacer()
+                            }
+                        }
+
+                        if let error = checker.checkError {
+                            HStack(spacing: 4) {
+                                Image(systemName: "exclamationmark.circle")
+                                    .foregroundStyle(.orange)
+                                    .font(.system(size: 10))
+                                Text(error)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
                                 Spacer()
                             }
                         }
@@ -257,6 +269,15 @@ struct SettingsView: View {
             }
             .padding()
         }
+    }
+
+    private static func formatCheckDate(_ date: Date) -> String {
+        if Calendar.current.isDateInToday(date) {
+            return "Today"
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: date)
     }
 
     private func setLaunchAtLogin(_ enabled: Bool) {
