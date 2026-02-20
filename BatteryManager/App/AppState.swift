@@ -4,6 +4,7 @@ import Combine
 @Observable
 final class AppState {
     // MARK: - Battery Info
+    var hasInitialReading: Bool = false
     var batteryLevel: Int = 0
     var isCharging: Bool = false
     var isPluggedIn: Bool = false
@@ -17,7 +18,7 @@ final class AppState {
     var fullyCharged: Bool = false
     var timeToEmpty: Int? = nil
     var timeToFull: Int? = nil
-    var healthPercent: Double = 100.0
+    var healthPercent: Double = 0.0
     var wattage: Double = 0.0
 
     // MARK: - Charging Control
@@ -36,6 +37,7 @@ final class AppState {
     // MARK: - Computed
     var batteryHealthDescription: String {
         let health = healthPercent
+        if health <= 0 { return "Unknown" }
         if health >= 90 { return "Good" }
         if health >= 80 { return "Fair" }
         if health >= 70 { return "Poor" }

@@ -29,8 +29,9 @@ struct SettingsView: View {
                 VStack(spacing: 6) {
                     SectionHeader(title: "General")
 
-                    SettingsToggle(
+                    SettingsToggleWithInfo(
                         title: "Launch at Login",
+                        info: "Automatically start BatteryManager when you log in to your Mac.",
                         isOn: Binding(
                             get: { appState.settings.launchAtLogin },
                             set: { newValue in
@@ -41,8 +42,9 @@ struct SettingsView: View {
                         )
                     )
 
-                    SettingsToggle(
+                    SettingsToggleWithInfo(
                         title: "Re-enable Charging on Quit",
+                        info: "When you quit BatteryManager, charging will be restored to normal so your battery charges fully.",
                         isOn: Binding(
                             get: { appState.settings.stopChargingOnQuit },
                             set: { newValue in
@@ -52,8 +54,9 @@ struct SettingsView: View {
                         )
                     )
 
-                    SettingsToggle(
+                    SettingsToggleWithInfo(
                         title: "Show Battery % in Menu Bar",
+                        info: "Display the current battery percentage next to the menu bar icon.",
                         isOn: Binding(
                             get: { appState.settings.showBatteryPercentInMenuBar },
                             set: { newValue in
@@ -63,8 +66,9 @@ struct SettingsView: View {
                         )
                     )
 
-                    SettingsToggle(
+                    SettingsToggleWithInfo(
                         title: "Prevent Sleep While Charging",
+                        info: "Keep your Mac awake while it\u{2019}s charging to ensure charge limits and schedules work correctly.",
                         isOn: Binding(
                             get: { appState.settings.preventSleepWhileCharging },
                             set: { newValue in
@@ -79,7 +83,10 @@ struct SettingsView: View {
 
                 // Heat Protection
                 VStack(spacing: 6) {
-                    SectionHeader(title: "Heat Protection")
+                    HStack {
+                        SectionHeader(title: "Heat Protection")
+                        InfoButton(text: "Automatically pauses charging when the battery temperature exceeds the threshold to prevent heat damage.")
+                    }
 
                     SettingsToggle(
                         title: "Enable Heat Protection",
@@ -121,7 +128,10 @@ struct SettingsView: View {
 
                 // Sailing Mode Defaults
                 VStack(spacing: 6) {
-                    SectionHeader(title: "Sailing Mode Defaults")
+                    HStack {
+                        SectionHeader(title: "Sailing Mode Defaults")
+                        InfoButton(text: "Sailing mode maintains your battery between a low and high bound by toggling charging on and off automatically.")
+                    }
 
                     HStack {
                         Text("Low Bound")
@@ -170,29 +180,29 @@ struct SettingsView: View {
 
                 Divider()
 
-                // Updates
-                if let checker = updateChecker {
-                    VStack(spacing: 6) {
-                        SectionHeader(title: "Updates")
+                // About & Updates (merged)
+                VStack(spacing: 8) {
+                    SectionHeader(title: "About")
 
-                        HStack {
-                            Text("Current Build")
-                                .font(.system(size: 11))
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text(String(BuildInfo.commitSHA.prefix(7)))
-                                .font(.system(size: 11, design: .monospaced))
-                        }
+                    HStack {
+                        Text("BatteryManager")
+                            .font(.system(size: 11, weight: .medium))
+                        Spacer()
+                        Text("Build \(String(BuildInfo.commitSHA.prefix(7)))")
+                            .font(.system(size: 10, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                    }
 
+                    if let checker = updateChecker {
                         if let lastCheck = checker.lastCheckDate {
                             HStack {
-                                Text("Last Checked")
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(.secondary)
+                                Text("Last checked")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.tertiary)
                                 Spacer()
                                 Text(lastCheck, style: .relative)
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.tertiary)
                             }
                         }
 
@@ -204,6 +214,7 @@ struct SettingsView: View {
                                 Text("Update available")
                                     .font(.system(size: 11, weight: .medium))
                                     .foregroundStyle(.blue)
+                                Spacer()
                             }
                         }
 
@@ -228,18 +239,6 @@ struct SettingsView: View {
                         .disabled(checker.isChecking)
                     }
 
-                    Divider()
-                }
-
-                // About
-                VStack(spacing: 6) {
-                    SectionHeader(title: "About")
-                    Text("BatteryManager")
-                        .font(.system(size: 11, weight: .medium))
-                    Text("Build \(String(BuildInfo.commitSHA.prefix(7)))")
-                        .font(.system(size: 10, design: .monospaced))
-                        .foregroundStyle(.secondary)
-
                     Button {
                         NSApplication.shared.terminate(nil)
                     } label: {
@@ -253,7 +252,7 @@ struct SettingsView: View {
                     }
                     .buttonStyle(.bordered)
                     .tint(.red)
-                    .padding(.top, 4)
+                    .padding(.top, 2)
                 }
             }
             .padding()
@@ -281,5 +280,58 @@ struct SettingsToggle: View {
         Toggle(title, isOn: $isOn)
             .toggleStyle(.switch)
             .font(.system(size: 11))
+    }
+}
+
+struct SettingsToggleWithInfo: View {
+    let title: String
+    let info: String
+    @Binding var isOn: Bool
+
+    @State private var showingInfo = false
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Toggle(title, isOn: $isOn)
+                .toggleStyle(.switch)
+                .font(.system(size: 11))
+
+            Button {
+                showingInfo.toggle()
+            } label: {
+                Image(systemName: "info.circle")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .popover(isPresented: $showingInfo, arrowEdge: .trailing) {
+                Text(info)
+                    .font(.system(size: 11))
+                    .padding(8)
+                    .frame(width: 200)
+            }
+        }
+    }
+}
+
+struct InfoButton: View {
+    let text: String
+    @State private var showingInfo = false
+
+    var body: some View {
+        Button {
+            showingInfo.toggle()
+        } label: {
+            Image(systemName: "info.circle")
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showingInfo, arrowEdge: .trailing) {
+            Text(text)
+                .font(.system(size: 11))
+                .padding(8)
+                .frame(width: 200)
+        }
     }
 }

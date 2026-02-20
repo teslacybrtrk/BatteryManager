@@ -20,6 +20,16 @@ struct BatteryStatusView: View {
                         .multilineTextAlignment(.center)
                 }
                 .frame(height: 100)
+            } else if !appState.hasInitialReading {
+                // Loading state until first battery reading
+                VStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.large)
+                    Text("Reading battery...")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(height: 100)
             } else {
             // Battery Level Circle
             ZStack {

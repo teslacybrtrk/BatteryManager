@@ -10,18 +10,29 @@ struct StatsView: View {
                 VStack(spacing: 6) {
                     SectionHeader(title: "Battery Health")
 
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(String(format: "%.1f%%", appState.healthPercent))
-                                .font(.system(size: 24, weight: .bold, design: .rounded))
-                                .foregroundStyle(healthColor)
-                            Text(appState.batteryHealthDescription)
+                    if !appState.hasInitialReading {
+                        HStack {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text("Reading battery health...")
                                 .font(.system(size: 11))
                                 .foregroundStyle(.secondary)
                         }
-                        Spacer()
-                        CircularProgressView(progress: appState.healthPercent / 100.0, color: healthColor)
-                            .frame(width: 50, height: 50)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(String(format: "%.1f%%", appState.healthPercent))
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundStyle(healthColor)
+                                Text(appState.batteryHealthDescription)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            CircularProgressView(progress: appState.healthPercent / 100.0, color: healthColor)
+                                .frame(width: 50, height: 50)
+                        }
                     }
                 }
 
