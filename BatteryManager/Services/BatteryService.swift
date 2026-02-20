@@ -44,12 +44,30 @@ final class BatteryService {
         }
 
         info.cycleCount = getInt("CycleCount") ?? 0
-        // On Apple Silicon, "MaxCapacity" is a percentage (e.g. 98).
-        // Use "AppleRawMaxCapacity" for the actual mAh value.
-        info.maxCapacity = getInt("AppleRawMaxCapacity") ?? getInt("MaxCapacity") ?? 0
         info.designCapacity = getInt("DesignCapacity") ?? 0
-        // Also use raw value on Apple Silicon for consistency with maxCapacity
-        info.currentCapacity = getInt("AppleRawCurrentCapacity") ?? getInt("CurrentCapacity") ?? 0
+
+        // On Apple Silicon, MaxCapacity/CurrentCapacity are percentages.
+        // AppleRawMaxCapacity/AppleRawCurrentCapacity are the real mAh values.
+        // We need consistent units: all mAh for health calc, percentage for battery level.
+        let rawMax = getInt("AppleRawMaxCapacity")
+        let rawCurrent = getInt("AppleRawCurrentCapacity")
+        let stdMax = getInt("MaxCapacity") ?? 0
+        let stdCurrent = getInt("CurrentCapacity") ?? 0
+
+        if let rawMax, let rawCurrent {
+            // Apple Silicon with raw keys available
+            info.maxCapacity = rawMax
+            info.currentCapacity = rawCurrent
+        } else if info.designCapacity > 0 && stdMax > 0 && stdMax <= 110 {
+            // Apple Silicon without raw keys: stdMax is a percentage
+            // Estimate mAh from percentage and design capacity
+            info.maxCapacity = Int(Double(info.designCapacity) * Double(stdMax) / 100.0)
+            info.currentCapacity = Int(Double(info.maxCapacity) * Double(stdCurrent) / Double(stdMax))
+        } else {
+            // Intel: MaxCapacity/CurrentCapacity are already mAh
+            info.maxCapacity = stdMax
+            info.currentCapacity = stdCurrent
+        }
         info.voltage = Double(getInt("Voltage") ?? 0) / 1000.0
         info.amperage = Double(getInt("Amperage") ?? 0)
         info.isCharging = getBool("IsCharging")
