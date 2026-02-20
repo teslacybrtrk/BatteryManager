@@ -5,7 +5,9 @@ import SwiftUI
 final class UpdateChecker {
     var updateAvailable = false
     var isDownloading = false
+    var isChecking = false
     var downloadProgress: Double = 0
+    var lastCheckDate: Date?
 
     private var assetURL: URL?
     private let repo = "teslacybrtrk/BatteryManager"
@@ -19,13 +21,26 @@ final class UpdateChecker {
     }
 
     func checkForUpdate() {
+        isChecking = true
         let url = URL(string: "https://api.github.com/repos/\(repo)/releases/tags/latest")!
         var request = URLRequest(url: url)
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
 
         URLSession.shared.dataTask(with: request) { [weak self] data, _, error in
-            guard let data = data, error == nil else { return }
-            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
+            guard let data = data, error == nil else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.isChecking = false
+                    self?.lastCheckDate = Date()
+                }
+                return
+            }
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.isChecking = false
+                    self?.lastCheckDate = Date()
+                }
+                return
+            }
 
             // Extract SHA from release title like "Latest Build (abc1234)"
             guard let title = json["name"] as? String else { return }
@@ -51,6 +66,8 @@ final class UpdateChecker {
 
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
+                self.isChecking = false
+                self.lastCheckDate = Date()
                 if isNew, let url = zipURL {
                     self.assetURL = url
                     self.updateAvailable = true

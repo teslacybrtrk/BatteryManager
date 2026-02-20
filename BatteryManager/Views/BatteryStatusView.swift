@@ -2,9 +2,25 @@ import SwiftUI
 
 struct BatteryStatusView: View {
     let appState: AppState
+    @State private var animatedLevel: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 12) {
+            if !appState.smcConnected {
+                // SMC not connected warning
+                VStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 28))
+                        .foregroundStyle(.orange)
+                    Text("SMC Not Connected")
+                        .font(.system(size: 13, weight: .semibold))
+                    Text("Run with elevated privileges to control charging.")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(height: 100)
+            } else {
             // Battery Level Circle
             ZStack {
                 Circle()
@@ -12,7 +28,7 @@ struct BatteryStatusView: View {
                     .frame(width: 80, height: 80)
 
                 Circle()
-                    .trim(from: 0, to: CGFloat(appState.batteryLevel) / 100.0)
+                    .trim(from: 0, to: animatedLevel / 100.0)
                     .stroke(batteryColor, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                     .frame(width: 80, height: 80)
                     .rotationEffect(.degrees(-90))
@@ -26,6 +42,16 @@ struct BatteryStatusView: View {
                             .font(.system(size: 10))
                             .foregroundStyle(.yellow)
                     }
+                }
+            }
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.8)) {
+                    animatedLevel = CGFloat(appState.batteryLevel)
+                }
+            }
+            .onChange(of: appState.batteryLevel) { _, newValue in
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    animatedLevel = CGFloat(newValue)
                 }
             }
 
@@ -48,6 +74,7 @@ struct BatteryStatusView: View {
                 InfoPill(icon: "thermometer.medium", value: String(format: "%.1f\u{00B0}C", appState.temperature))
                 InfoPill(icon: "bolt.fill", value: String(format: "%.1fW", appState.wattage))
             }
+            } // end else
         }
         .padding(.vertical, 8)
     }
