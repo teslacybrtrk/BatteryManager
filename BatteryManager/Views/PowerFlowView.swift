@@ -6,9 +6,6 @@ struct PowerFlowView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Power Flow")
-                .font(.system(size: 13, weight: .semibold))
-
             // Three-node diagram
             HStack(spacing: 0) {
                 // Adapter Node

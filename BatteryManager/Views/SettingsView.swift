@@ -3,10 +3,28 @@ import ServiceManagement
 
 struct SettingsView: View {
     let appState: AppState
+    var updateChecker: UpdateChecker?
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
+                // SMC Warning
+                if !appState.smcConnected {
+                    HStack(spacing: 8) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                        Text("SMC not connected. Charging control is unavailable. Run with elevated privileges.")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(.orange.opacity(0.1))
+                    )
+                }
+
                 // General
                 VStack(spacing: 6) {
                     SectionHeader(title: "General")
@@ -152,18 +170,89 @@ struct SettingsView: View {
 
                 Divider()
 
+                // Updates
+                if let checker = updateChecker {
+                    VStack(spacing: 6) {
+                        SectionHeader(title: "Updates")
+
+                        HStack {
+                            Text("Current Build")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text(String(BuildInfo.commitSHA.prefix(7)))
+                                .font(.system(size: 11, design: .monospaced))
+                        }
+
+                        if let lastCheck = checker.lastCheckDate {
+                            HStack {
+                                Text("Last Checked")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                Text(lastCheck, style: .relative)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
+                        if checker.updateAvailable {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.down.circle.fill")
+                                    .foregroundStyle(.blue)
+                                    .font(.system(size: 11))
+                                Text("Update available")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+
+                        Button {
+                            checker.checkForUpdate()
+                        } label: {
+                            HStack(spacing: 4) {
+                                if checker.isChecking {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                        .scaleEffect(0.7)
+                                } else {
+                                    Image(systemName: "arrow.clockwise")
+                                }
+                                Text("Check for Updates")
+                            }
+                            .font(.system(size: 11))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 4)
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(checker.isChecking)
+                    }
+
+                    Divider()
+                }
+
                 // About
-                VStack(spacing: 4) {
+                VStack(spacing: 6) {
                     SectionHeader(title: "About")
-                    Text("BatteryManager v1.0")
-                        .font(.system(size: 10))
+                    Text("BatteryManager")
+                        .font(.system(size: 11, weight: .medium))
+                    Text("Build \(String(BuildInfo.commitSHA.prefix(7)))")
+                        .font(.system(size: 10, design: .monospaced))
                         .foregroundStyle(.secondary)
 
-                    Button("Quit BatteryManager") {
+                    Button {
                         NSApplication.shared.terminate(nil)
+                    } label: {
+                        HStack {
+                            Image(systemName: "power")
+                            Text("Quit BatteryManager")
+                        }
+                        .font(.system(size: 11))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
                     }
-                    .font(.system(size: 11))
-                    .foregroundStyle(.red)
+                    .buttonStyle(.bordered)
+                    .tint(.red)
                     .padding(.top, 4)
                 }
             }

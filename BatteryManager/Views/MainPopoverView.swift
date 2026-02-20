@@ -27,6 +27,7 @@ struct MainPopoverView: View {
 
     @State private var selectedTab: PopoverTab = .dashboard
     @State private var updateDismissed = false
+    @State private var isHoveringDismiss = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -40,10 +41,14 @@ struct MainPopoverView: View {
                             Image(systemName: tab.icon)
                                 .font(.system(size: 12))
                             Text(tab.rawValue)
-                                .font(.system(size: 8))
+                                .font(.system(size: 9))
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(selectedTab == tab ? Color.accentColor.opacity(0.12) : Color.clear)
+                        )
                         .foregroundStyle(selectedTab == tab ? .blue : .secondary)
                     }
                     .buttonStyle(.plain)
@@ -77,8 +82,16 @@ struct MainPopoverView: View {
                         } label: {
                             Image(systemName: "xmark")
                                 .font(.caption2)
+                                .frame(width: 18, height: 18)
+                                .background(
+                                    Circle()
+                                        .fill(isHoveringDismiss ? Color.primary.opacity(0.1) : Color.clear)
+                                )
                         }
                         .buttonStyle(.plain)
+                        .onHover { hovering in
+                            isHoveringDismiss = hovering
+                        }
 
                         Button("Update") {
                             checker.performUpdate()
@@ -88,7 +101,11 @@ struct MainPopoverView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(.blue.opacity(0.08))
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(.blue.opacity(0.08))
+                )
+                .padding(.horizontal, 8)
             }
 
             // Content
@@ -103,7 +120,7 @@ struct MainPopoverView: View {
                 case .schedule:
                     ScheduleView(appState: appState, onAction: onScheduleAction)
                 case .settings:
-                    SettingsView(appState: appState)
+                    SettingsView(appState: appState, updateChecker: updateChecker)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
