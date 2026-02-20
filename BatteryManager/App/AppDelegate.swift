@@ -169,11 +169,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             },
             onHelperInstalled: { [weak self] in
                 self?.reconnectAfterHelperInstall()
+            },
+            onHeightChanged: { [weak self] (height: CGFloat) in
+                guard let popover = self?.popover else { return }
+                NSAnimationContext.runAnimationGroup { context in
+                    context.duration = 0.2
+                    context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                    popover.contentSize = NSSize(width: 320, height: height)
+                }
             }
         )
 
+        let initialHeight = MainPopoverView.heightForTab(.dashboard)
         popover = NSPopover()
-        popover?.contentSize = NSSize(width: 320, height: 520)
+        popover?.contentSize = NSSize(width: 320, height: initialHeight)
         popover?.behavior = .transient
         popover?.animates = true
         popover?.contentViewController = NSHostingController(rootView: mainView)
