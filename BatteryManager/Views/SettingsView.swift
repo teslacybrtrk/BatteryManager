@@ -247,18 +247,6 @@ struct SettingsView: View {
                             }
                         }
 
-                        if checker.updateAvailable {
-                            HStack(spacing: 4) {
-                                Image(systemName: "arrow.down.circle.fill")
-                                    .foregroundStyle(.orange)
-                                    .font(.system(size: 11))
-                                Text("Update available — switch to Dashboard to install")
-                                    .font(.system(size: 11, weight: .medium))
-                                    .foregroundStyle(.orange)
-                                Spacer()
-                            }
-                        }
-
                         if let error = checker.checkError {
                             HStack(spacing: 4) {
                                 Image(systemName: "exclamationmark.circle")
