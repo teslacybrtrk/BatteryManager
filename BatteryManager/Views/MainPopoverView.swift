@@ -23,6 +23,7 @@ struct MainPopoverView: View {
     var onLimitChanged: ((Int) -> Void)?
     var onModeChanged: ((ChargingMode) -> Void)?
     var onScheduleAction: ((ScheduleAction) -> Void)?
+    var onHelperInstalled: (() -> Void)?
 
     @State private var selectedTab: PopoverTab = .dashboard
     @State private var updateDismissed = false
@@ -142,7 +143,7 @@ struct MainPopoverView: View {
                 case .schedule:
                     ScheduleView(appState: appState, onAction: onScheduleAction)
                 case .settings:
-                    SettingsView(appState: appState, updateChecker: updateChecker)
+                    SettingsView(appState: appState, updateChecker: updateChecker, helperInstaller: helperInstaller)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -157,6 +158,7 @@ struct MainPopoverView: View {
         .onChange(of: helperInstaller?.isInstalled) { _, installed in
             if installed == true {
                 appState.needsHelperInstall = false
+                onHelperInstalled?()
             }
         }
     }

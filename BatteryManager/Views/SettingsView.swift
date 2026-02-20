@@ -4,24 +4,54 @@ import ServiceManagement
 struct SettingsView: View {
     let appState: AppState
     var updateChecker: UpdateChecker?
+    var helperInstaller: HelperInstaller?
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                // SMC Warning
+                // SMC Warning with install button
                 if !appState.smcConnected {
-                    HStack(spacing: 8) {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundStyle(.orange)
-                        Text("SMC not connected. Charging control is unavailable. Run with elevated privileges.")
-                            .font(.system(size: 10))
-                            .foregroundStyle(.secondary)
+                    VStack(spacing: 8) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.red)
+                            Text("Charging control is unavailable. Install the helper tool to enable it.")
+                                .font(.system(size: 10))
+                        }
+
+                        if let installer = helperInstaller, !installer.isInstalled {
+                            Button {
+                                installer.install()
+                            } label: {
+                                HStack(spacing: 4) {
+                                    if installer.isInstalling {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                            .scaleEffect(0.7)
+                                    } else {
+                                        Image(systemName: "key.fill")
+                                    }
+                                    Text(installer.isInstalling ? "Installing..." : "Install Helper")
+                                }
+                                .font(.system(size: 11))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 4)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(installer.isInstalling)
+
+                            if let error = installer.installError {
+                                Text(error)
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(.red)
+                            }
+                        }
                     }
                     .padding(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(.orange.opacity(0.1))
+                            .fill(.red.opacity(0.08))
                     )
                 }
 

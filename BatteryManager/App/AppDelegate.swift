@@ -166,6 +166,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             },
             onScheduleAction: { [weak self] action in
                 self?.handleScheduleAction(action)
+            },
+            onHelperInstalled: { [weak self] in
+                self?.reconnectAfterHelperInstall()
             }
         )
 
@@ -206,6 +209,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             scheduleService?.removeSchedule(id: id)
         case .toggle(let id, let enabled):
             scheduleService?.toggleSchedule(id: id, enabled: enabled)
+        }
+    }
+
+    // MARK: - Helper Install
+
+    private func reconnectAfterHelperInstall() {
+        smcService?.reconnect()
+        appState.smcConnected = smcService?.isConnected ?? false
+
+        if appState.smcConnected {
+            // Re-apply the charge limit now that we can actually write to SMC
+            chargingController?.applyChargeLimit(appState.settings.chargeLimit)
+            print("[AppDelegate] Helper installed, SMC reconnected, charge limit re-applied")
+        } else {
+            print("[AppDelegate] Helper installed but SMC still not connected")
         }
     }
 
