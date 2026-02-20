@@ -2,11 +2,9 @@ import SwiftUI
 
 struct CompactPowerFlowView: View {
     let appState: AppState
-    @State private var dotPhase: CGFloat = 0
-    @State private var glowPhase: CGFloat = 0.4
 
-    // The dot takes 3s per segment. Phase 0→1 = left arrow, 1→2 = right arrow.
-    private let cycleDuration: Double = 6.0
+    // Total cycle: 3s left segment + 3s right segment = 6s
+    private let segmentDuration: Double = 3.0
 
     var body: some View {
         VStack(spacing: 8) {
@@ -17,54 +15,59 @@ struct CompactPowerFlowView: View {
                 Spacer()
             }
 
-            HStack(spacing: 0) {
-                CompactPowerNode(
-                    icon: "powerplug.fill",
-                    label: "Adapter",
-                    sublabel: appState.isPluggedIn ? String(format: "%.1fW", appState.wattage) : "Off",
-                    isActive: appState.isPluggedIn
-                )
+            TimelineView(.animation) { timeline in
+                let time = timeline.date.timeIntervalSinceReferenceDate
+                let cycleDuration = segmentDuration * 2
+                let phase = time.truncatingRemainder(dividingBy: cycleDuration)
+                let glowPulse = 0.5 + 0.5 * sin(time * 3.0) // smooth pulse
 
-                CompactFlowArrow(
-                    isActive: appState.isCharging,
-                    dotProgress: dotPhase <= 1 ? dotPhase : nil,
-                    glowOpacity: glowPhase
-                )
-                .frame(width: 40)
+                let leftProgress: CGFloat? = phase < segmentDuration
+                    ? CGFloat(phase / segmentDuration)
+                    : nil
 
-                CompactPowerNode(
-                    icon: batteryIcon,
-                    label: "Battery",
-                    sublabel: "\(appState.batteryLevel)%",
-                    isActive: true
-                )
+                let rightProgress: CGFloat? = phase >= segmentDuration
+                    ? CGFloat((phase - segmentDuration) / segmentDuration)
+                    : nil
 
-                CompactFlowArrow(
-                    isActive: true,
-                    dotProgress: dotPhase > 1 ? dotPhase - 1 : nil,
-                    glowOpacity: glowPhase
-                )
-                .frame(width: 40)
+                HStack(spacing: 0) {
+                    CompactPowerNode(
+                        icon: "powerplug.fill",
+                        label: "Adapter",
+                        sublabel: appState.isPluggedIn ? String(format: "%.1fW", appState.wattage) : "Off",
+                        isActive: appState.isPluggedIn
+                    )
 
-                CompactPowerNode(
-                    icon: "desktopcomputer",
-                    label: "System",
-                    sublabel: "Active",
-                    isActive: true
-                )
+                    FlowSegment(
+                        isActive: appState.isCharging,
+                        dotProgress: appState.isCharging ? leftProgress : nil,
+                        glowIntensity: glowPulse
+                    )
+                    .frame(width: 40)
+
+                    CompactPowerNode(
+                        icon: batteryIcon,
+                        label: "Battery",
+                        sublabel: "\(appState.batteryLevel)%",
+                        isActive: true
+                    )
+
+                    FlowSegment(
+                        isActive: true,
+                        dotProgress: rightProgress,
+                        glowIntensity: glowPulse
+                    )
+                    .frame(width: 40)
+
+                    CompactPowerNode(
+                        icon: "desktopcomputer",
+                        label: "System",
+                        sublabel: "Active",
+                        isActive: true
+                    )
+                }
             }
         }
         .padding(.horizontal, 4)
-        .onAppear {
-            // Sequential dot: 0→1 left side, 1→2 right side
-            withAnimation(.linear(duration: cycleDuration).repeatForever(autoreverses: false)) {
-                dotPhase = 2
-            }
-            // Glow pulse
-            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
-                glowPhase = 1.0
-            }
-        }
     }
 
     private var batteryIcon: String {
@@ -102,48 +105,66 @@ struct CompactPowerNode: View {
     }
 }
 
-struct CompactFlowArrow: View {
+struct FlowSegment: View {
     let isActive: Bool
-    let dotProgress: CGFloat?  // nil = no dot shown on this segment
-    let glowOpacity: CGFloat
+    let dotProgress: CGFloat?
+    let glowIntensity: Double
 
     var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width
-            let midY = geometry.size.height / 2
+        Canvas { context, size in
+            let midY = size.height / 2
+            let width = size.width
 
-            ZStack {
-                // Line
-                Path { path in
-                    path.move(to: CGPoint(x: 0, y: midY))
-                    path.addLine(to: CGPoint(x: width, y: midY))
-                }
-                .stroke(isActive ? Color.blue.opacity(0.3) : Color.gray.opacity(0.2), lineWidth: 1.5)
+            // Draw the line
+            var linePath = Path()
+            linePath.move(to: CGPoint(x: 0, y: midY))
+            linePath.addLine(to: CGPoint(x: width, y: midY))
+            context.stroke(
+                linePath,
+                with: .color(isActive ? Color.blue.opacity(0.25) : Color.gray.opacity(0.15)),
+                lineWidth: 1.5
+            )
 
-                // Animated dot with glow
-                if isActive, let progress = dotProgress {
-                    let dotX = width * min(max(progress, 0), 1)
+            // Draw chevron
+            let chevronX = width / 2
+            let chevronY = midY - 8
+            var chevron = Path()
+            chevron.move(to: CGPoint(x: chevronX - 2, y: chevronY - 3))
+            chevron.addLine(to: CGPoint(x: chevronX + 2, y: chevronY))
+            chevron.addLine(to: CGPoint(x: chevronX - 2, y: chevronY + 3))
+            context.stroke(
+                chevron,
+                with: .color(isActive ? Color.blue.opacity(0.6) : Color.gray.opacity(0.3)),
+                style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round)
+            )
 
-                    // Glow
-                    Circle()
-                        .fill(Color.blue.opacity(0.3 * glowOpacity))
-                        .frame(width: 12, height: 12)
-                        .blur(radius: 3)
-                        .position(x: dotX, y: midY)
+            // Draw the glowing dot
+            if isActive, let progress = dotProgress {
+                let dotX = width * min(max(progress, 0), 1)
+                let dotCenter = CGPoint(x: dotX, y: midY)
 
-                    // Dot
-                    Circle()
-                        .fill(Color.blue)
-                        .frame(width: 5, height: 5)
-                        .shadow(color: .blue.opacity(0.6 * glowOpacity), radius: 3)
-                        .position(x: dotX, y: midY)
-                }
+                // Outer glow
+                let glowRect = CGRect(x: dotX - 7, y: midY - 7, width: 14, height: 14)
+                context.fill(
+                    Circle().path(in: glowRect),
+                    with: .color(Color.blue.opacity(0.2 * glowIntensity))
+                )
 
-                // Arrow head
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 6))
-                    .foregroundStyle(isActive ? .blue : .gray.opacity(0.5))
-                    .position(x: width / 2, y: midY - 8)
+                // Inner glow
+                let innerGlowRect = CGRect(x: dotX - 5, y: midY - 5, width: 10, height: 10)
+                context.fill(
+                    Circle().path(in: innerGlowRect),
+                    with: .color(Color.blue.opacity(0.35 * glowIntensity))
+                )
+
+                // Core dot
+                let dotRect = CGRect(x: dotX - 2.5, y: midY - 2.5, width: 5, height: 5)
+                context.fill(
+                    Circle().path(in: dotRect),
+                    with: .color(Color.blue)
+                )
+
+                _ = dotCenter // suppress unused warning
             }
         }
     }
