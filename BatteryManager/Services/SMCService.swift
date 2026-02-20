@@ -80,9 +80,12 @@ final class SMCService {
         let semaphore = DispatchSemaphore(value: 0)
         var pingSuccess = false
 
-        let proxy = conn.remoteObjectProxyWithErrorHandler { _ in
+        guard let proxy = conn.remoteObjectProxyWithErrorHandler({ _ in
             semaphore.signal()
-        } as! SMCHelperProtocol
+        }) as? SMCHelperProtocol else {
+            conn.invalidate()
+            return false
+        }
 
         proxy.ping { success in
             pingSuccess = success
@@ -112,10 +115,18 @@ final class SMCService {
     }
 
     private func xpcProxy() -> SMCHelperProtocol? {
-        guard let conn = xpcConnection else { return nil }
-        return conn.remoteObjectProxyWithErrorHandler { error in
+        guard let conn = xpcConnection else {
+            print("[SMCService] XPC proxy requested but no connection")
+            return nil
+        }
+        guard let proxy = conn.remoteObjectProxyWithErrorHandler({ error in
             print("[SMCService] XPC proxy error: \(error)")
-        } as? SMCHelperProtocol
+        }) as? SMCHelperProtocol else {
+            print("[SMCService] XPC proxy cast failed, attempting reconnect")
+            reconnectXPC()
+            return nil
+        }
+        return proxy
     }
 
     // MARK: - Generic Read/Write
