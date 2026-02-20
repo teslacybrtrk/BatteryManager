@@ -29,6 +29,15 @@ struct MainPopoverView: View {
     @State private var updateDismissed = false
     @State private var isHoveringDismiss = false
 
+    private func heightForTab(_ tab: PopoverTab) -> CGFloat {
+        switch tab {
+        case .dashboard: return 520
+        case .stats: return 480
+        case .schedule: return 420
+        case .settings: return 560
+        }
+    }
+
     var body: some View {
         ZStack {
         VStack(spacing: 0) {
@@ -154,7 +163,8 @@ struct MainPopoverView: View {
             helperInstallOverlay(installer: installer)
         }
         } // end ZStack
-        .frame(width: 320, height: 520)
+        .frame(width: 320, height: heightForTab(selectedTab))
+        .animation(.easeInOut(duration: 0.2), value: selectedTab)
         .onChange(of: helperInstaller?.isInstalled) { _, installed in
             if installed == true {
                 appState.needsHelperInstall = false
