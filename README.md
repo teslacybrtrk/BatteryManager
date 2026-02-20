@@ -25,13 +25,9 @@ If macOS blocks it without an Open button:
 
 You only need to do this once. After that, the app opens normally.
 
-### Running with SMC access
+### Privileged helper
 
-BatteryManager needs to write to SMC keys to control charging hardware. This requires running with elevated privileges:
-
-```bash
-sudo open /Applications/BatteryManager.app
-```
+BatteryManager needs to write to SMC keys to control charging hardware. On first launch, the app will ask for your admin password to install a small privileged helper tool. This is a one-time setup — after that, the app works without `sudo`.
 
 ## Features
 

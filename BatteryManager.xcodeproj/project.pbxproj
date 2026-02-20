@@ -53,6 +53,14 @@
 		AA000035200000350AA00001 /* BatteryShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000035200000350AA00000 /* BatteryShortcuts.swift */; };
 		AA000036200000360AA00001 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000036200000360AA00000 /* UpdateChecker.swift */; };
 		AA000037200000370AA00001 /* BuildInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000037200000370AA00000 /* BuildInfo.swift */; };
+		BB00001100000011000BB000 /* SMCHelperProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00000100000001000BB000 /* SMCHelperProtocol.swift */; };
+		BB00001200000012000BB000 /* HelperInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00000300000003000BB000 /* HelperInstaller.swift */; };
+		BB00001300000013000BB000 /* com.batterymanager.helper.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB00000400000004000BB000 /* com.batterymanager.helper.plist */; };
+		BB00001400000014000BB000 /* com.batterymanager.helper in Copy Helpers */ = {isa = PBXBuildFile; fileRef = BB00000500000005000BB000 /* com.batterymanager.helper */; };
+		BB00002100000021000BB000 /* SMCHelperProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00000100000001000BB000 /* SMCHelperProtocol.swift */; };
+		BB00002200000022000BB000 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00000200000002000BB000 /* main.swift */; };
+		BB00002300000023000BB000 /* SMCKit.c in Sources */ = {isa = PBXBuildFile; fileRef = FE8E6D7F2C93E415002F3DCB /* SMCKit.c */; };
+		BB00002400000024000BB000 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FEB9025B2C92B7C900A2A134 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +77,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = FEB902222C92A71700A2A134;
 			remoteInfo = BatteryManager;
+		};
+		BB00006100000061000BB000 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FEB9021B2C92A71700A2A134 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB00005000000050000BB000;
+			remoteInfo = BatteryManagerHelper;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -126,6 +141,11 @@
 		AA000035200000350AA00000 /* BatteryShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryShortcuts.swift; sourceTree = "<group>"; };
 		AA000036200000360AA00000 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		AA000037200000370AA00000 /* BuildInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInfo.swift; sourceTree = "<group>"; };
+		BB00000100000001000BB000 /* SMCHelperProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMCHelperProtocol.swift; sourceTree = "<group>"; };
+		BB00000200000002000BB000 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		BB00000300000003000BB000 /* HelperInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperInstaller.swift; sourceTree = "<group>"; };
+		BB00000400000004000BB000 /* com.batterymanager.helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "com.batterymanager.helper.plist"; sourceTree = "<group>"; };
+		BB00000500000005000BB000 /* com.batterymanager.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "com.batterymanager.helper"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +171,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BB00003200000032000BB000 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB00002400000024000BB000 /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -158,6 +186,9 @@
 			isa = PBXGroup;
 			children = (
 				FEB902252C92A71700A2A134 /* BatteryManager */,
+				BB00004100000041000BB000 /* Shared */,
+				BB00004200000042000BB000 /* BatteryManagerHelper */,
+				BB00004300000043000BB000 /* Resources */,
 				FEB902372C92A71800A2A134 /* BatteryManagerTests */,
 				FEB902412C92A71800A2A134 /* BatteryManagerUITests */,
 				FEB902242C92A71700A2A134 /* Products */,
@@ -171,6 +202,7 @@
 				FEB902232C92A71700A2A134 /* BatteryManager.app */,
 				FEB902342C92A71800A2A134 /* BatteryManagerTests.xctest */,
 				FEB9023E2C92A71800A2A134 /* BatteryManagerUITests.xctest */,
+				BB00000500000005000BB000 /* com.batterymanager.helper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -231,6 +263,7 @@
 				AA000016200000160AA00000 /* PowerAssertionService.swift */,
 				AA000017200000170AA00000 /* MagSafeLEDService.swift */,
 				AA000036200000360AA00000 /* UpdateChecker.swift */,
+				BB00000300000003000BB000 /* HelperInstaller.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -317,6 +350,30 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		BB00004100000041000BB000 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				BB00000100000001000BB000 /* SMCHelperProtocol.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		BB00004200000042000BB000 /* BatteryManagerHelper */ = {
+			isa = PBXGroup;
+			children = (
+				BB00000200000002000BB000 /* main.swift */,
+			);
+			path = BatteryManagerHelper;
+			sourceTree = "<group>";
+		};
+		BB00004300000043000BB000 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BB00000400000004000BB000 /* com.batterymanager.helper.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -328,10 +385,12 @@
 				FEB9021F2C92A71700A2A134 /* Sources */,
 				FEB902202C92A71700A2A134 /* Frameworks */,
 				FEB902212C92A71700A2A134 /* Resources */,
+				BB00007000000070000BB000 /* Copy Helpers */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				BB00006200000062000BB000 /* PBXTargetDependency */,
 			);
 			name = BatteryManager;
 			productName = BatteryManager;
@@ -374,6 +433,22 @@
 			productReference = FEB9023E2C92A71800A2A134 /* BatteryManagerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		BB00005000000050000BB000 /* BatteryManagerHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB00005300000053000BB000 /* Build configuration list for PBXNativeTarget "BatteryManagerHelper" */;
+			buildPhases = (
+				BB00003100000031000BB000 /* Sources */,
+				BB00003200000032000BB000 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BatteryManagerHelper;
+			productName = "com.batterymanager.helper";
+			productReference = BB00000500000005000BB000 /* com.batterymanager.helper */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -396,6 +471,9 @@
 						CreatedOnToolsVersion = 15.4;
 						TestTargetID = FEB902222C92A71700A2A134;
 					};
+					BB00005000000050000BB000 = {
+						CreatedOnToolsVersion = 15.4;
+					};
 				};
 			};
 			buildConfigurationList = FEB9021E2C92A71700A2A134 /* Build configuration list for PBXProject "BatteryManager" */;
@@ -411,6 +489,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				BB00005000000050000BB000 /* BatteryManagerHelper */,
 				FEB902222C92A71700A2A134 /* BatteryManager */,
 				FEB902332C92A71800A2A134 /* BatteryManagerTests */,
 				FEB9023D2C92A71800A2A134 /* BatteryManagerUITests */,
@@ -425,6 +504,7 @@
 			files = (
 				FEB9022E2C92A71800A2A134 /* Preview Assets.xcassets in Resources */,
 				FEB9022B2C92A71800A2A134 /* Assets.xcassets in Resources */,
+				BB00001300000013000BB000 /* com.batterymanager.helper.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,6 +541,20 @@
 			shellScript = "echo \"enum BuildInfo { static let commitSHA = \\\"$(git rev-parse HEAD)\\\" }\" > ${SRCROOT}/BatteryManager/App/BuildInfo.swift\n";
 		};
 /* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BB00007000000070000BB000 /* Copy Helpers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Helpers;
+			dstSubfolderSpec = 1;
+			files = (
+				BB00001400000014000BB000 /* com.batterymanager.helper in Copy Helpers */,
+			);
+			name = "Copy Helpers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		FEB9021F2C92A71700A2A134 /* Sources */ = {
@@ -507,6 +601,18 @@
 				AA000035200000350AA00001 /* BatteryShortcuts.swift in Sources */,
 				AA000036200000360AA00001 /* UpdateChecker.swift in Sources */,
 				AA000037200000370AA00001 /* BuildInfo.swift in Sources */,
+				BB00001100000011000BB000 /* SMCHelperProtocol.swift in Sources */,
+				BB00001200000012000BB000 /* HelperInstaller.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB00003100000031000BB000 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB00002100000021000BB000 /* SMCHelperProtocol.swift in Sources */,
+				BB00002200000022000BB000 /* main.swift in Sources */,
+				BB00002300000023000BB000 /* SMCKit.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -539,6 +645,11 @@
 			isa = PBXTargetDependency;
 			target = FEB902222C92A71700A2A134 /* BatteryManager */;
 			targetProxy = FEB9023F2C92A71800A2A134 /* PBXContainerItemProxy */;
+		};
+		BB00006200000062000BB000 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB00005000000050000BB000 /* BatteryManagerHelper */;
+			targetProxy = BB00006100000061000BB000 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -794,6 +905,43 @@
 			};
 			name = Release;
 		};
+		BB00005100000051000BB000 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AY429H89ZJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.batterymanager.helper;
+				PRODUCT_NAME = "com.batterymanager.helper";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "BatteryManager/Helpers/BatteryManager-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BB00005200000052000BB000 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AY429H89ZJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.batterymanager.helper;
+				PRODUCT_NAME = "com.batterymanager.helper";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "BatteryManager/Helpers/BatteryManager-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -829,6 +977,15 @@
 			buildConfigurations = (
 				FEB9024F2C92A71800A2A134 /* Debug */,
 				FEB902502C92A71800A2A134 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB00005300000053000BB000 /* Build configuration list for PBXNativeTarget "BatteryManagerHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB00005100000051000BB000 /* Debug */,
+				BB00005200000052000BB000 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
