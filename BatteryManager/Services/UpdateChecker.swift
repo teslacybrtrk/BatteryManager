@@ -9,6 +9,14 @@ final class UpdateChecker {
 
     private var assetURL: URL?
     private let repo = "teslacybrtrk/BatteryManager"
+    private var timer: Timer?
+
+    func startPeriodicChecks() {
+        checkForUpdate()
+        timer = Timer.scheduledTimer(withTimeInterval: 24 * 60 * 60, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.checkForUpdate() }
+        }
+    }
 
     func checkForUpdate() {
         let url = URL(string: "https://api.github.com/repos/\(repo)/releases/tags/latest")!
