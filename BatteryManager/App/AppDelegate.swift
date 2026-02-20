@@ -102,7 +102,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Update checker
         let checker = UpdateChecker()
         updateChecker = checker
-        checker.checkForUpdate()
+        checker.startPeriodicChecks()
 
         // Apply saved settings
         appState.chargeLimit = appState.settings.chargeLimit
