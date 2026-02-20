@@ -546,7 +546,7 @@
 		BB00007000000070000BB000 /* Copy Helpers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = Helpers;
+			dstPath = "Contents/Helpers";
 			dstSubfolderSpec = 1;
 			files = (
 				BB00001400000014000BB000 /* com.batterymanager.helper in Copy Helpers */,

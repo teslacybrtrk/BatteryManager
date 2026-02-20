@@ -104,8 +104,8 @@ final class HelperInstaller {
     }
 
     private func helperSourcePath() -> String? {
-        guard let bundlePath = Bundle.main.bundlePath as String? else { return nil }
-        let helperPath = (bundlePath as NSString).appendingPathComponent("Helpers/com.batterymanager.helper")
+        let bundlePath = Bundle.main.bundlePath
+        let helperPath = (bundlePath as NSString).appendingPathComponent("Contents/Helpers/com.batterymanager.helper")
         return FileManager.default.fileExists(atPath: helperPath) ? helperPath : nil
     }
 
