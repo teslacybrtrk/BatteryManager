@@ -34,6 +34,33 @@ final class SMCService {
         }
     }
 
+    /// Re-attempt connection (call after helper is installed)
+    func reconnect() {
+        if useXPC {
+            xpcConnection?.invalidate()
+            xpcConnection = nil
+        } else if isConnected {
+            SMCClose(connection)
+            connection = 0
+        }
+        useXPC = false
+        isConnected = false
+
+        if connectViaXPC() {
+            useXPC = true
+            isConnected = true
+            print("[SMCService] Reconnected via XPC helper")
+        } else {
+            let result = SMCOpen(&connection)
+            isConnected = (result == kIOReturnSuccess)
+            if isConnected {
+                print("[SMCService] Reconnected via direct SMC access")
+            } else {
+                print("[SMCService] Reconnect failed: \(result)")
+            }
+        }
+    }
+
     // MARK: - XPC Connection
 
     private func connectViaXPC() -> Bool {
