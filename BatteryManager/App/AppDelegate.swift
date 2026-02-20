@@ -128,7 +128,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Apply initial charge limit
         chargingController?.applyChargeLimit(appState.settings.chargeLimit)
 
-        // Menu bar icon update timer
+        // Menu bar icon update timer (cancel old one first to prevent duplicates)
+        iconUpdateTimer?.invalidate()
         iconUpdateTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.updateMenuBarIcon()
         }

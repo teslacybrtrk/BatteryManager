@@ -17,10 +17,14 @@ final class ChargingController {
     }
 
     func startControlLoop() {
+        // Cancel any existing timer to prevent duplicates
+        timer?.cancel()
+        timer = nil
+
         timer = DispatchSource.makeTimerSource(queue: queue)
-        timer?.schedule(deadline: .now(), repeating: 30.0)
+        timer?.schedule(deadline: .now() + 5.0, repeating: 30.0)
         timer?.setEventHandler { [weak self] in
-            self?.evaluateAndAct()
+            self?.safeEvaluate()
         }
         timer?.resume()
     }
@@ -51,40 +55,72 @@ final class ChargingController {
     func setMode(_ mode: ChargingMode) {
         DispatchQueue.main.async { [weak self] in
             self?.appState.currentMode = mode
-        }
-        // Immediately evaluate
-        queue.async { [weak self] in
-            self?.evaluateAndAct()
+            self?.safeEvaluate()
         }
     }
 
     func applyChargeLimit(_ limit: Int) {
         let clamped = max(20, min(100, limit))
+        // Set BCLM - Apple Silicon only supports 80 or 100
+        let bclmValue: UInt8 = clamped <= 80 ? 80 : 100
+        _ = smcService.setBatteryChargeLimit(bclmValue)
+        // Update state on main thread, then evaluate with correct values
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.appState.chargeLimit = clamped
             self.appState.settings.chargeLimit = clamped
             self.appState.settings.save()
-        }
-        // Set BCLM - Apple Silicon only supports 80 or 100
-        let bclmValue: UInt8 = clamped <= 80 ? 80 : 100
-        _ = smcService.setBatteryChargeLimit(bclmValue)
-        // Immediately evaluate
-        queue.async { [weak self] in
-            self?.evaluateAndAct()
+            // Snapshot state on main thread before dispatching
+            self.safeEvaluate()
         }
     }
 
     // MARK: - Core Control Loop
 
-    private func evaluateAndAct() {
-        let level = appState.batteryLevel
-        let limit = appState.chargeLimit
-        let mode = appState.currentMode
+    /// Snapshot state on the main thread, then dispatch evaluation to background queue.
+    /// Can be called from any thread — if on main, snapshots directly; otherwise dispatches to main first.
+    private func safeEvaluate() {
+        let doSnapshot = { [weak self] in
+            guard let self else { return }
+            guard self.appState.hasInitialReading else { return }
+            let level = self.appState.batteryLevel
+            let limit = self.appState.chargeLimit
+            let mode = self.appState.currentMode
+            let heatEnabled = self.appState.settings.heatProtectionEnabled
+            let heatThreshold = self.appState.settings.heatProtectionThreshold
+            let sailingLow = self.appState.settings.sailingLow
+            let sailingHigh = self.appState.settings.sailingHigh
+            let preventSleep = self.appState.settings.preventSleepWhileCharging
+            let fullyCharged = self.appState.fullyCharged
+            let chargeLimit = self.appState.settings.chargeLimit
+            self.queue.async {
+                self.evaluateAndAct(
+                    level: level, limit: limit, mode: mode,
+                    heatEnabled: heatEnabled, heatThreshold: heatThreshold,
+                    sailingLow: sailingLow, sailingHigh: sailingHigh,
+                    preventSleep: preventSleep, fullyCharged: fullyCharged,
+                    chargeLimit: chargeLimit
+                )
+            }
+        }
+        if Thread.isMainThread {
+            doSnapshot()
+        } else {
+            DispatchQueue.main.async { doSnapshot() }
+        }
+    }
+
+    private func evaluateAndAct(
+        level: Int, limit: Int, mode: ChargingMode,
+        heatEnabled: Bool, heatThreshold: Double,
+        sailingLow: Int, sailingHigh: Int,
+        preventSleep: Bool, fullyCharged: Bool,
+        chargeLimit: Int
+    ) {
 
         // Check for heat protection override
-        if appState.settings.heatProtectionEnabled, let thermal = thermalService {
-            if thermal.isOverheating(threshold: appState.settings.heatProtectionThreshold) {
+        if heatEnabled, let thermal = thermalService {
+            if thermal.isOverheating(threshold: heatThreshold) {
                 handleHeatProtection()
                 return
             }
@@ -92,11 +128,11 @@ final class ChargingController {
 
         switch mode {
         case .normal:
-            handleNormalMode(level: level, limit: limit)
+            handleNormalMode(level: level, limit: limit, preventSleep: preventSleep)
         case .topUp:
-            handleTopUp(level: level)
+            handleTopUp(level: level, fullyCharged: fullyCharged, chargeLimit: chargeLimit)
         case .sailing:
-            handleSailingMode(level: level)
+            handleSailingMode(level: level, sailingLow: sailingLow, sailingHigh: sailingHigh)
         case .discharge:
             handleDischarge()
         case .calibration:
@@ -109,34 +145,36 @@ final class ChargingController {
         magSafeLEDService?.updateLED(for: appState)
     }
 
-    private func handleNormalMode(level: Int, limit: Int) {
+    private func handleNormalMode(level: Int, limit: Int, preventSleep: Bool) {
         if level >= limit {
             disableCharging()
             powerAssertionService?.allowSleep()
+            print("[ChargingController] Battery \(level)% >= limit \(limit)%, charging disabled")
         } else {
             enableCharging()
-            if appState.settings.preventSleepWhileCharging {
+            if preventSleep {
                 powerAssertionService?.preventSleep(reason: "Charging to limit")
             }
+            print("[ChargingController] Battery \(level)% < limit \(limit)%, charging enabled")
         }
     }
 
-    private func handleTopUp(level: Int) {
+    private func handleTopUp(level: Int, fullyCharged: Bool, chargeLimit: Int) {
         // Temporarily charge to 100%
         _ = smcService.setBatteryChargeLimit(100)
         enableCharging()
 
-        if level >= 100 || appState.fullyCharged {
+        if level >= 100 || fullyCharged {
             // Revert to normal mode
-            let normalLimit: UInt8 = appState.settings.chargeLimit <= 80 ? 80 : 100
+            let normalLimit: UInt8 = chargeLimit <= 80 ? 80 : 100
             _ = smcService.setBatteryChargeLimit(normalLimit)
             setMode(.normal)
         }
     }
 
-    private func handleSailingMode(level: Int) {
-        let low = appState.settings.sailingLow
-        let high = appState.settings.sailingHigh
+    private func handleSailingMode(level: Int, sailingLow: Int, sailingHigh: Int) {
+        let low = sailingLow
+        let high = sailingHigh
 
         if level < low {
             enableCharging()
