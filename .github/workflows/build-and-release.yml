@@ -32,7 +32,15 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Ad-hoc sign
-        run: codesign --force --deep --sign - build/Build/Products/Release/BatteryManager.app
+        run: |
+          APP_PATH="build/Build/Products/Release/BatteryManager.app"
+          # Sign the embedded helper first
+          HELPER_PATH="$APP_PATH/Contents/Helpers/com.batterymanager.helper"
+          if [ -f "$HELPER_PATH" ]; then
+            codesign --force --sign - "$HELPER_PATH"
+          fi
+          # Then sign the app bundle
+          codesign --force --deep --sign - "$APP_PATH"
 
       - name: Package ZIP
         run: |
@@ -48,7 +56,9 @@ jobs:
           RELEASE_NAME="Latest Build (${SHORT_SHA})"
           BODY="Automated build from commit ${GITHUB_SHA} on $(date -u '+%Y-%m-%d %H:%M UTC').
 
-          > **Note:** This app is not notarized. On first launch, right-click the app and select **Open** to bypass Gatekeeper."
+          > **Note:** This app is not notarized. On first launch, right-click the app and select **Open** to bypass Gatekeeper.
+
+          On first launch, BatteryManager will ask for your admin password to install a helper tool. This is a one-time setup."
 
           # Delete existing release and tag if present
           gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true

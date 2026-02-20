@@ -20,6 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private(set) var powerAssertionService: PowerAssertionService?
     private(set) var magSafeLEDService: MagSafeLEDService?
     private(set) var updateChecker: UpdateChecker?
+    private(set) var helperInstaller: HelperInstaller?
 
     // UI
     private var menuBarIconManager: MenuBarIconManager?
@@ -104,6 +105,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         updateChecker = checker
         checker.startPeriodicChecks()
 
+        // Helper installer
+        let installer = HelperInstaller()
+        helperInstaller = installer
+
+        // Check if helper is needed (not connected and no XPC)
+        if !smc.isConnected {
+            appState.needsHelperInstall = true
+            installer.checkIfInstalled()
+        }
+
         // Apply saved settings
         appState.chargeLimit = appState.settings.chargeLimit
     }
@@ -146,6 +157,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let mainView = MainPopoverView(
             appState: appState,
             updateChecker: updateChecker,
+            helperInstaller: helperInstaller,
             onLimitChanged: { [weak self] limit in
                 self?.chargingController?.applyChargeLimit(limit)
             },

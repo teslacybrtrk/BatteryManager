@@ -30,6 +30,7 @@ final class AppState {
 
     // MARK: - Status
     var smcConnected: Bool = false
+    var needsHelperInstall: Bool = false
     var lastError: String? = nil
 
     // MARK: - Computed
