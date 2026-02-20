@@ -48,7 +48,8 @@ final class BatteryService {
         // Use "AppleRawMaxCapacity" for the actual mAh value.
         info.maxCapacity = getInt("AppleRawMaxCapacity") ?? getInt("MaxCapacity") ?? 0
         info.designCapacity = getInt("DesignCapacity") ?? 0
-        info.currentCapacity = getInt("CurrentCapacity") ?? 0
+        // Also use raw value on Apple Silicon for consistency with maxCapacity
+        info.currentCapacity = getInt("AppleRawCurrentCapacity") ?? getInt("CurrentCapacity") ?? 0
         info.voltage = Double(getInt("Voltage") ?? 0) / 1000.0
         info.amperage = Double(getInt("Amperage") ?? 0)
         info.isCharging = getBool("IsCharging")
