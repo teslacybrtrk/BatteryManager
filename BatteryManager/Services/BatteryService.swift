@@ -44,7 +44,9 @@ final class BatteryService {
         }
 
         info.cycleCount = getInt("CycleCount") ?? 0
-        info.maxCapacity = getInt("MaxCapacity") ?? 0
+        // On Apple Silicon, "MaxCapacity" is a percentage (e.g. 98).
+        // Use "AppleRawMaxCapacity" for the actual mAh value.
+        info.maxCapacity = getInt("AppleRawMaxCapacity") ?? getInt("MaxCapacity") ?? 0
         info.designCapacity = getInt("DesignCapacity") ?? 0
         info.currentCapacity = getInt("CurrentCapacity") ?? 0
         info.voltage = Double(getInt("Voltage") ?? 0) / 1000.0
