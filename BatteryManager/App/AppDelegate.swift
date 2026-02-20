@@ -109,8 +109,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let installer = HelperInstaller()
         helperInstaller = installer
 
-        // Check if helper is needed (not connected and no XPC)
-        if !smc.isConnected {
+        // Check if helper is needed — direct SMC read access works without root,
+        // but writing (charging control) requires the privileged XPC helper
+        if !smc.useXPC {
             appState.needsHelperInstall = true
             installer.checkIfInstalled()
         }
