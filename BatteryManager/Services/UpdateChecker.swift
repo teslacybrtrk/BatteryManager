@@ -43,10 +43,22 @@ final class UpdateChecker {
             }
 
             // Extract SHA from release title like "Latest Build (abc1234)"
-            guard let title = json["name"] as? String else { return }
+            guard let title = json["name"] as? String else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.isChecking = false
+                    self?.lastCheckDate = Date()
+                }
+                return
+            }
             guard let regex = try? NSRegularExpression(pattern: "\\(([0-9a-f]{7,})\\)"),
                   let match = regex.firstMatch(in: title, range: NSRange(title.startIndex..., in: title)),
-                  let shaRange = Range(match.range(at: 1), in: title) else { return }
+                  let shaRange = Range(match.range(at: 1), in: title) else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.isChecking = false
+                    self?.lastCheckDate = Date()
+                }
+                return
+            }
             let remoteSHA = String(title[shaRange])
 
             // Find the zip asset download URL

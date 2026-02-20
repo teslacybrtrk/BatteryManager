@@ -47,6 +47,7 @@ struct MainPopoverView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 6)
+                        .contentShape(Rectangle())
                         .background(
                             RoundedRectangle(cornerRadius: 6)
                                 .fill(selectedTab == tab ? Color.accentColor.opacity(0.12) : Color.clear)
@@ -133,7 +134,7 @@ struct MainPopoverView: View {
             helperInstallOverlay(installer: installer)
         }
         } // end ZStack
-        .frame(width: 320, height: 420)
+        .frame(width: 320, height: 520)
         .onChange(of: helperInstaller?.isInstalled) { _, installed in
             if installed == true {
                 appState.needsHelperInstall = false

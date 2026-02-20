@@ -15,8 +15,8 @@ struct BatteryInfo {
     var timeToFull: Int? = nil     // Minutes
 
     var healthPercent: Double {
-        guard designCapacity > 0 else { return 100.0 }
-        return (Double(maxCapacity) / Double(designCapacity)) * 100.0
+        guard designCapacity > 0, maxCapacity > 0 else { return 0.0 }
+        return min((Double(maxCapacity) / Double(designCapacity)) * 100.0, 100.0)
     }
 
     var batteryLevel: Int {

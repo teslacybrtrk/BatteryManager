@@ -21,7 +21,7 @@ struct ChargeLimitView: View {
                 }
 
                 Slider(value: $sliderValue, in: 20...100, step: 5) {
-                    Text("Charge Limit")
+                    EmptyView()
                 } onEditingChanged: { editing in
                     if !editing {
                         onLimitChanged?(Int(sliderValue))
@@ -44,10 +44,13 @@ struct ChargeLimitView: View {
 
             // Quick Mode Buttons
             VStack(spacing: 6) {
-                Text("Quick Actions")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack {
+                    Text("Quick Actions")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary)
+                    InfoButton(text: "Top Up charges to 100% temporarily. Sailing mode maintains charge within a range. Discharge drains the battery to a target level.")
+                    Spacer()
+                }
 
                 HStack(spacing: 8) {
                     ModeButton(title: "Top Up", icon: "battery.100percent.bolt", isActive: appState.currentMode == .topUp) {

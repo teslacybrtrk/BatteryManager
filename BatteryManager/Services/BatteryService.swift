@@ -96,6 +96,7 @@ final class BatteryService {
 
         DispatchQueue.main.async { [weak self] in
             guard let state = self?.appState else { return }
+            state.hasInitialReading = true
             state.batteryLevel = info.batteryLevel
             state.isCharging = info.isCharging
             state.isPluggedIn = info.isPluggedIn
