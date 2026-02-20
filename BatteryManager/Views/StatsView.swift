@@ -8,7 +8,10 @@ struct StatsView: View {
             VStack(spacing: 12) {
                 // Health Section
                 VStack(spacing: 6) {
-                    SectionHeader(title: "Battery Health")
+                    HStack {
+                        SectionHeader(title: "Battery Health")
+                        InfoButton(text: "Health is calculated as (Maximum Capacity \u{00F7} Design Capacity) \u{00D7} 100%. Design capacity is the original factory rating in mAh. Maximum capacity is the most your battery can hold today — it decreases naturally over charge cycles. This value may fluctuate slightly as macOS recalibrates based on temperature, charge level, and recent usage.")
+                    }
 
                     if !appState.hasInitialReading {
                         HStack {
