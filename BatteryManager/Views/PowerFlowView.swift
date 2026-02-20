@@ -2,7 +2,11 @@ import SwiftUI
 
 struct CompactPowerFlowView: View {
     let appState: AppState
-    @State private var animationPhase: CGFloat = 0
+    @State private var dotPhase: CGFloat = 0
+    @State private var glowPhase: CGFloat = 0.4
+
+    // The dot takes 3s per segment. Phase 0→1 = left arrow, 1→2 = right arrow.
+    private let cycleDuration: Double = 6.0
 
     var body: some View {
         VStack(spacing: 8) {
@@ -14,7 +18,6 @@ struct CompactPowerFlowView: View {
             }
 
             HStack(spacing: 0) {
-                // Adapter Node
                 CompactPowerNode(
                     icon: "powerplug.fill",
                     label: "Adapter",
@@ -22,14 +25,13 @@ struct CompactPowerFlowView: View {
                     isActive: appState.isPluggedIn
                 )
 
-                // Flow Arrow: Adapter → Battery
                 CompactFlowArrow(
                     isActive: appState.isCharging,
-                    animationPhase: animationPhase
+                    dotProgress: dotPhase <= 1 ? dotPhase : nil,
+                    glowOpacity: glowPhase
                 )
                 .frame(width: 40)
 
-                // Battery Node
                 CompactPowerNode(
                     icon: batteryIcon,
                     label: "Battery",
@@ -37,14 +39,13 @@ struct CompactPowerFlowView: View {
                     isActive: true
                 )
 
-                // Flow Arrow: Battery → System
                 CompactFlowArrow(
                     isActive: true,
-                    animationPhase: animationPhase
+                    dotProgress: dotPhase > 1 ? dotPhase - 1 : nil,
+                    glowOpacity: glowPhase
                 )
                 .frame(width: 40)
 
-                // System Node
                 CompactPowerNode(
                     icon: "desktopcomputer",
                     label: "System",
@@ -55,8 +56,13 @@ struct CompactPowerFlowView: View {
         }
         .padding(.horizontal, 4)
         .onAppear {
-            withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) {
-                animationPhase = 1
+            // Sequential dot: 0→1 left side, 1→2 right side
+            withAnimation(.linear(duration: cycleDuration).repeatForever(autoreverses: false)) {
+                dotPhase = 2
+            }
+            // Glow pulse
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                glowPhase = 1.0
             }
         }
     }
@@ -98,7 +104,8 @@ struct CompactPowerNode: View {
 
 struct CompactFlowArrow: View {
     let isActive: Bool
-    let animationPhase: CGFloat
+    let dotProgress: CGFloat?  // nil = no dot shown on this segment
+    let glowOpacity: CGFloat
 
     var body: some View {
         GeometryReader { geometry in
@@ -106,19 +113,33 @@ struct CompactFlowArrow: View {
             let midY = geometry.size.height / 2
 
             ZStack {
+                // Line
                 Path { path in
                     path.move(to: CGPoint(x: 0, y: midY))
                     path.addLine(to: CGPoint(x: width, y: midY))
                 }
                 .stroke(isActive ? Color.blue.opacity(0.3) : Color.gray.opacity(0.2), lineWidth: 1.5)
 
-                if isActive {
+                // Animated dot with glow
+                if isActive, let progress = dotProgress {
+                    let dotX = width * min(max(progress, 0), 1)
+
+                    // Glow
+                    Circle()
+                        .fill(Color.blue.opacity(0.3 * glowOpacity))
+                        .frame(width: 12, height: 12)
+                        .blur(radius: 3)
+                        .position(x: dotX, y: midY)
+
+                    // Dot
                     Circle()
                         .fill(Color.blue)
-                        .frame(width: 4, height: 4)
-                        .position(x: width * animationPhase, y: midY)
+                        .frame(width: 5, height: 5)
+                        .shadow(color: .blue.opacity(0.6 * glowOpacity), radius: 3)
+                        .position(x: dotX, y: midY)
                 }
 
+                // Arrow head
                 Image(systemName: "chevron.right")
                     .font(.system(size: 6))
                     .foregroundStyle(isActive ? .blue : .gray.opacity(0.5))
