@@ -1,6 +1,7 @@
 import Cocoa
 import SwiftUI
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var popover: NSPopover?
@@ -18,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private(set) var scheduleService: ScheduleService?
     private(set) var powerAssertionService: PowerAssertionService?
     private(set) var magSafeLEDService: MagSafeLEDService?
+    private(set) var updateChecker: UpdateChecker?
 
     // UI
     private var menuBarIconManager: MenuBarIconManager?
@@ -97,6 +99,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let schedule = ScheduleService(appState: appState, chargingController: controller)
         scheduleService = schedule
 
+        // Update checker
+        let checker = UpdateChecker()
+        updateChecker = checker
+        checker.checkForUpdate()
+
         // Apply saved settings
         appState.chargeLimit = appState.settings.chargeLimit
     }
@@ -138,6 +145,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func setupPopover() {
         let mainView = MainPopoverView(
             appState: appState,
+            updateChecker: updateChecker,
             onLimitChanged: { [weak self] limit in
                 self?.chargingController?.applyChargeLimit(limit)
             },

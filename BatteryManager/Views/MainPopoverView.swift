@@ -20,11 +20,13 @@ enum PopoverTab: String, CaseIterable {
 
 struct MainPopoverView: View {
     let appState: AppState
+    var updateChecker: UpdateChecker?
     var onLimitChanged: ((Int) -> Void)?
     var onModeChanged: ((ChargingMode) -> Void)?
     var onScheduleAction: ((ScheduleAction) -> Void)?
 
     @State private var selectedTab: PopoverTab = .dashboard
+    @State private var updateDismissed = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -52,6 +54,42 @@ struct MainPopoverView: View {
 
             Divider()
                 .padding(.horizontal)
+
+            // Update banner
+            if let checker = updateChecker, checker.updateAvailable, !updateDismissed {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.down.circle.fill")
+                        .foregroundStyle(.blue)
+
+                    if checker.isDownloading {
+                        ProgressView(value: checker.downloadProgress)
+                            .frame(maxWidth: .infinity)
+                        Text("\(Int(checker.downloadProgress * 100))%")
+                            .font(.caption)
+                            .monospacedDigit()
+                    } else {
+                        Text("Update available")
+                            .font(.caption)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                        Button {
+                            updateDismissed = true
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.caption2)
+                        }
+                        .buttonStyle(.plain)
+
+                        Button("Update") {
+                            checker.performUpdate()
+                        }
+                        .controlSize(.small)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(.blue.opacity(0.08))
+            }
 
             // Content
             Group {

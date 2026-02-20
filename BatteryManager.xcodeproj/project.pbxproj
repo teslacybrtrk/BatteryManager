@@ -51,6 +51,8 @@
 		AA000033200000330AA00001 /* ToggleChargingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000033200000330AA00000 /* ToggleChargingIntent.swift */; };
 		AA000034200000340AA00001 /* StartSailingModeIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000034200000340AA00000 /* StartSailingModeIntent.swift */; };
 		AA000035200000350AA00001 /* BatteryShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000035200000350AA00000 /* BatteryShortcuts.swift */; };
+		AA000036200000360AA00001 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000036200000360AA00000 /* UpdateChecker.swift */; };
+		AA000037200000370AA00001 /* BuildInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000037200000370AA00000 /* BuildInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +124,8 @@
 		AA000033200000330AA00000 /* ToggleChargingIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleChargingIntent.swift; sourceTree = "<group>"; };
 		AA000034200000340AA00000 /* StartSailingModeIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartSailingModeIntent.swift; sourceTree = "<group>"; };
 		AA000035200000350AA00000 /* BatteryShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryShortcuts.swift; sourceTree = "<group>"; };
+		AA000036200000360AA00000 /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
+		AA000037200000370AA00000 /* BuildInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +199,7 @@
 				FEB902262C92A71700A2A134 /* BatteryManagerApp.swift */,
 				FEB902582C92B6BB00A2A134 /* AppDelegate.swift */,
 				AA0000012D000001000AA000 /* AppState.swift */,
+				AA000037200000370AA00000 /* BuildInfo.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -225,6 +230,7 @@
 				AA000015200000150AA00000 /* ScheduleService.swift */,
 				AA000016200000160AA00000 /* PowerAssertionService.swift */,
 				AA000017200000170AA00000 /* MagSafeLEDService.swift */,
+				AA000036200000360AA00000 /* UpdateChecker.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -318,6 +324,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FEB902482C92A71800A2A134 /* Build configuration list for PBXNativeTarget "BatteryManager" */;
 			buildPhases = (
+				AA000038200000380AA00000 /* Generate BuildInfo */,
 				FEB9021F2C92A71700A2A134 /* Sources */,
 				FEB902202C92A71700A2A134 /* Frameworks */,
 				FEB902212C92A71700A2A134 /* Resources */,
@@ -437,6 +444,24 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		AA000038200000380AA00000 /* Generate BuildInfo */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate BuildInfo";
+			outputPaths = (
+				"$(SRCROOT)/BatteryManager/App/BuildInfo.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"enum BuildInfo { static let commitSHA = \\\"$(git rev-parse HEAD)\\\" }\" > ${SRCROOT}/BatteryManager/App/BuildInfo.swift\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		FEB9021F2C92A71700A2A134 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -480,6 +505,8 @@
 				AA000033200000330AA00001 /* ToggleChargingIntent.swift in Sources */,
 				AA000034200000340AA00001 /* StartSailingModeIntent.swift in Sources */,
 				AA000035200000350AA00001 /* BatteryShortcuts.swift in Sources */,
+				AA000036200000360AA00001 /* UpdateChecker.swift in Sources */,
+				AA000037200000370AA00001 /* BuildInfo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -553,7 +580,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -616,7 +643,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
