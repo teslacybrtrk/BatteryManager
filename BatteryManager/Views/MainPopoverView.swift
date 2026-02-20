@@ -166,29 +166,43 @@ struct MainPopoverView: View {
     @ViewBuilder
     private func helperInstallOverlay(installer: HelperInstaller) -> some View {
         ZStack {
-            Color.black.opacity(0.5)
+            Color.black.opacity(0.6)
                 .ignoresSafeArea()
 
-            VStack(spacing: 16) {
+            VStack(spacing: 14) {
                 Image(systemName: "lock.shield.fill")
-                    .font(.system(size: 36))
+                    .font(.system(size: 40))
                     .foregroundStyle(.blue)
 
-                Text("Helper Tool Required")
-                    .font(.system(size: 15, weight: .semibold))
+                Text("One-Time Setup")
+                    .font(.system(size: 16, weight: .bold))
 
-                Text("BatteryManager needs a privileged helper to control charging. This is a one-time setup that requires your admin password.")
+                Text("BatteryManager needs to install a small helper tool to control your battery's charging hardware.")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 16)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Label("Set and enforce charge limits", systemImage: "checkmark.circle.fill")
+                    Label("Toggle charging on/off", systemImage: "checkmark.circle.fill")
+                    Label("Enable sailing and discharge modes", systemImage: "checkmark.circle.fill")
+                }
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+
+                Text("You'll be asked for your admin password. This only needs to happen once.")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.blue)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
 
                 if let error = installer.installError {
                     Text(error)
                         .font(.system(size: 10))
                         .foregroundStyle(.red)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 16)
                 }
 
                 Button {
@@ -209,21 +223,21 @@ struct MainPopoverView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(installer.isInstalling)
-                .padding(.horizontal, 40)
+                .padding(.horizontal, 32)
 
-                Button("Skip for now") {
+                Button("Skip (charging control won\u{2019}t work)") {
                     appState.needsHelperInstall = false
                 }
-                .font(.system(size: 10))
-                .foregroundStyle(.secondary)
+                .font(.system(size: 9))
+                .foregroundStyle(.tertiary)
                 .buttonStyle(.plain)
             }
-            .padding(24)
+            .padding(20)
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(.regularMaterial)
             )
-            .padding(16)
+            .padding(12)
         }
     }
 
