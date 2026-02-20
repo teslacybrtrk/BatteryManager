@@ -35,7 +35,7 @@ struct MainPopoverView: View {
         case .dashboard: return 520
         case .stats: return 480
         case .schedule: return 420
-        case .settings: return 580
+        case .settings: return 660
         }
     }
 
