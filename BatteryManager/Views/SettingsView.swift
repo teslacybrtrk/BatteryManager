@@ -184,52 +184,7 @@ struct SettingsView: View {
                 VStack(spacing: 8) {
                     SectionHeader(title: "About")
 
-                    HStack {
-                        Text("BatteryManager")
-                            .font(.system(size: 11, weight: .medium))
-                        Spacer()
-                        Text("Build \(String(BuildInfo.commitSHA.prefix(7)))")
-                            .font(.system(size: 10, design: .monospaced))
-                            .foregroundStyle(.secondary)
-                    }
-
                     if let checker = updateChecker {
-                        if let lastCheck = checker.lastCheckDate {
-                            HStack {
-                                Text("Last checked")
-                                    .font(.system(size: 10))
-                                    .foregroundStyle(.tertiary)
-                                Spacer()
-                                Text(Self.formatCheckDate(lastCheck))
-                                    .font(.system(size: 10))
-                                    .foregroundStyle(.tertiary)
-                            }
-                        }
-
-                        if checker.updateAvailable {
-                            HStack(spacing: 4) {
-                                Image(systemName: "arrow.down.circle.fill")
-                                    .foregroundStyle(.blue)
-                                    .font(.system(size: 11))
-                                Text("Update available — switch to Dashboard to install")
-                                    .font(.system(size: 11, weight: .medium))
-                                    .foregroundStyle(.blue)
-                                Spacer()
-                            }
-                        }
-
-                        if let error = checker.checkError {
-                            HStack(spacing: 4) {
-                                Image(systemName: "exclamationmark.circle")
-                                    .foregroundStyle(.orange)
-                                    .font(.system(size: 10))
-                                Text(error)
-                                    .font(.system(size: 10))
-                                    .foregroundStyle(.secondary)
-                                Spacer()
-                            }
-                        }
-
                         Button {
                             checker.checkForUpdate()
                         } label: {
@@ -249,6 +204,53 @@ struct SettingsView: View {
                         }
                         .buttonStyle(.bordered)
                         .disabled(checker.isChecking)
+
+                        if let lastCheck = checker.lastCheckDate {
+                            HStack {
+                                Text("Last checked")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.tertiary)
+                                Spacer()
+                                Text(Self.formatCheckDate(lastCheck))
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+
+                        if checker.updateAvailable {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.down.circle.fill")
+                                    .foregroundStyle(.orange)
+                                    .font(.system(size: 11))
+                                Text("Update available — switch to Dashboard to install")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(.orange)
+                                Spacer()
+                            }
+                        }
+
+                        if let error = checker.checkError {
+                            HStack(spacing: 4) {
+                                Image(systemName: "exclamationmark.circle")
+                                    .foregroundStyle(.orange)
+                                    .font(.system(size: 10))
+                                Text(error)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                            }
+                        }
+                    }
+
+                    Divider()
+
+                    HStack {
+                        Text("BatteryManager")
+                            .font(.system(size: 11, weight: .medium))
+                        Spacer()
+                        Text("Build \(String(BuildInfo.commitSHA.prefix(7)))")
+                            .font(.system(size: 10, design: .monospaced))
+                            .foregroundStyle(.secondary)
                     }
 
                     Button {

@@ -63,50 +63,73 @@ struct MainPopoverView: View {
 
             // Update banner
             if let checker = updateChecker, checker.updateAvailable, !updateDismissed {
-                HStack(spacing: 8) {
-                    Image(systemName: "arrow.down.circle.fill")
-                        .foregroundStyle(.blue)
-
+                VStack(spacing: 6) {
                     if checker.isDownloading {
-                        ProgressView(value: checker.downloadProgress)
-                            .frame(maxWidth: .infinity)
-                        Text("\(Int(checker.downloadProgress * 100))%")
-                            .font(.caption)
-                            .monospacedDigit()
+                        HStack(spacing: 8) {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .foregroundStyle(.orange)
+                            ProgressView(value: checker.downloadProgress)
+                                .tint(.orange)
+                                .frame(maxWidth: .infinity)
+                            Text("\(Int(checker.downloadProgress * 100))%")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .monospacedDigit()
+                        }
                     } else {
-                        Text("Update available")
-                            .font(.caption)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .font(.system(size: 16))
+                                .foregroundStyle(.orange)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Update Available")
+                                    .font(.system(size: 12, weight: .semibold))
+                                Text("A new version is ready to install.")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Button {
+                                updateDismissed = true
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 10))
+                                    .frame(width: 20, height: 20)
+                                    .background(
+                                        Circle()
+                                            .fill(isHoveringDismiss ? Color.primary.opacity(0.1) : Color.clear)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                            .onHover { hovering in
+                                isHoveringDismiss = hovering
+                            }
+                        }
 
                         Button {
-                            updateDismissed = true
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.caption2)
-                                .frame(width: 18, height: 18)
-                                .background(
-                                    Circle()
-                                        .fill(isHoveringDismiss ? Color.primary.opacity(0.1) : Color.clear)
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .onHover { hovering in
-                            isHoveringDismiss = hovering
-                        }
-
-                        Button("Update") {
                             checker.performUpdate()
+                        } label: {
+                            Text("Install Update")
+                                .font(.system(size: 11, weight: .medium))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 6)
                         }
-                        .controlSize(.small)
+                        .buttonStyle(.borderedProminent)
+                        .tint(.orange)
                     }
                 }
                 .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(.blue.opacity(0.08))
+                        .fill(.orange.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .strokeBorder(.orange.opacity(0.2), lineWidth: 1)
+                        )
                 )
                 .padding(.horizontal, 8)
+                .padding(.top, 4)
             }
 
             // Content
