@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		FE8E6D802C93E415002F3DCB /* SMCKit.c in Sources */ = {isa = PBXBuildFile; fileRef = FE8E6D7F2C93E415002F3DCB /* SMCKit.c */; };
 		FEB902272C92A71700A2A134 /* BatteryManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902262C92A71700A2A134 /* BatteryManagerApp.swift */; };
-		FEB902292C92A71700A2A134 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902282C92A71700A2A134 /* ContentView.swift */; };
 		FEB9022B2C92A71800A2A134 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FEB9022A2C92A71800A2A134 /* Assets.xcassets */; };
 		FEB9022E2C92A71800A2A134 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FEB9022D2C92A71800A2A134 /* Preview Assets.xcassets */; };
 		FEB902392C92A71800A2A134 /* BatteryManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902382C92A71800A2A134 /* BatteryManagerTests.swift */; };
@@ -17,6 +16,41 @@
 		FEB902452C92A71800A2A134 /* BatteryManagerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902442C92A71800A2A134 /* BatteryManagerUITestsLaunchTests.swift */; };
 		FEB902592C92B6BB00A2A134 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB902582C92B6BB00A2A134 /* AppDelegate.swift */; };
 		FEB9025C2C92B7C900A2A134 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FEB9025B2C92B7C900A2A134 /* IOKit.framework */; };
+		AA0000012D000001000AA001 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012D000001000AA000 /* AppState.swift */; };
+		AA0000022D000002000AA001 /* BatteryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000022D000002000AA000 /* BatteryInfo.swift */; };
+		AA0000032D000003000AA001 /* ChargingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000032D000003000AA000 /* ChargingMode.swift */; };
+		AA0000042D000004000AA001 /* SMCKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000042D000004000AA000 /* SMCKey.swift */; };
+		AA0000052D000005000AA001 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000052D000005000AA000 /* Settings.swift */; };
+		AA0000062D000006000AA001 /* CalibrationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000062D000006000AA000 /* CalibrationState.swift */; };
+		AA0000072D000007000AA001 /* PowerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000072D000007000AA000 /* PowerSource.swift */; };
+		AA0000082D000008000AA001 /* Schedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000082D000008000AA000 /* Schedule.swift */; };
+		AA0000092D000009000AA001 /* SMCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000092D000009000AA000 /* SMCService.swift */; };
+		AA000010200000100AA00001 /* BatteryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000010200000100AA00000 /* BatteryService.swift */; };
+		AA000011200000110AA00001 /* ChargingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000011200000110AA00000 /* ChargingController.swift */; };
+		AA000012200000120AA00001 /* ThermalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000012200000120AA00000 /* ThermalService.swift */; };
+		AA000013200000130AA00001 /* ClamshellService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000013200000130AA00000 /* ClamshellService.swift */; };
+		AA000014200000140AA00001 /* CalibrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000014200000140AA00000 /* CalibrationService.swift */; };
+		AA000015200000150AA00001 /* ScheduleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000015200000150AA00000 /* ScheduleService.swift */; };
+		AA000016200000160AA00001 /* PowerAssertionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000016200000160AA00000 /* PowerAssertionService.swift */; };
+		AA000017200000170AA00001 /* MagSafeLEDService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000017200000170AA00000 /* MagSafeLEDService.swift */; };
+		AA000018200000180AA00001 /* MainPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000018200000180AA00000 /* MainPopoverView.swift */; };
+		AA000019200000190AA00001 /* BatteryStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000019200000190AA00000 /* BatteryStatusView.swift */; };
+		AA000020200000200AA00001 /* ChargeLimitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000020200000200AA00000 /* ChargeLimitView.swift */; };
+		AA000021200000210AA00001 /* SailingModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000021200000210AA00000 /* SailingModeView.swift */; };
+		AA000022200000220AA00001 /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000022200000220AA00000 /* CalibrationView.swift */; };
+		AA000023200000230AA00001 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000023200000230AA00000 /* StatsView.swift */; };
+		AA000024200000240AA00001 /* PowerFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000024200000240AA00000 /* PowerFlowView.swift */; };
+		AA000025200000250AA00001 /* MenuBarIconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000025200000250AA00000 /* MenuBarIconManager.swift */; };
+		AA000026200000260AA00001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000026200000260AA00000 /* SettingsView.swift */; };
+		AA000027200000270AA00001 /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000027200000270AA00000 /* ScheduleView.swift */; };
+		AA000028200000280AA00001 /* BatteryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000028200000280AA00000 /* BatteryViewModel.swift */; };
+		AA000029200000290AA00001 /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000029200000290AA00000 /* StatsViewModel.swift */; };
+		AA000030200000300AA00001 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000030200000300AA00000 /* ScheduleViewModel.swift */; };
+		AA000031200000310AA00001 /* SetChargeLimitIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000031200000310AA00000 /* SetChargeLimitIntent.swift */; };
+		AA000032200000320AA00001 /* GetBatteryInfoIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000032200000320AA00000 /* GetBatteryInfoIntent.swift */; };
+		AA000033200000330AA00001 /* ToggleChargingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000033200000330AA00000 /* ToggleChargingIntent.swift */; };
+		AA000034200000340AA00001 /* StartSailingModeIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000034200000340AA00000 /* StartSailingModeIntent.swift */; };
+		AA000035200000350AA00001 /* BatteryShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000035200000350AA00000 /* BatteryShortcuts.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,7 +76,6 @@
 		FE8E6D7F2C93E415002F3DCB /* SMCKit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SMCKit.c; sourceTree = "<group>"; };
 		FEB902232C92A71700A2A134 /* BatteryManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEB902262C92A71700A2A134 /* BatteryManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryManagerApp.swift; sourceTree = "<group>"; };
-		FEB902282C92A71700A2A134 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FEB9022A2C92A71800A2A134 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FEB9022D2C92A71800A2A134 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FEB9022F2C92A71800A2A134 /* BatteryManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BatteryManager.entitlements; sourceTree = "<group>"; };
@@ -54,6 +87,41 @@
 		FEB902552C92B16900A2A134 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FEB902582C92B6BB00A2A134 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FEB9025B2C92B7C900A2A134 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		AA0000012D000001000AA000 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		AA0000022D000002000AA000 /* BatteryInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryInfo.swift; sourceTree = "<group>"; };
+		AA0000032D000003000AA000 /* ChargingMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingMode.swift; sourceTree = "<group>"; };
+		AA0000042D000004000AA000 /* SMCKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMCKey.swift; sourceTree = "<group>"; };
+		AA0000052D000005000AA000 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		AA0000062D000006000AA000 /* CalibrationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationState.swift; sourceTree = "<group>"; };
+		AA0000072D000007000AA000 /* PowerSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerSource.swift; sourceTree = "<group>"; };
+		AA0000082D000008000AA000 /* Schedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schedule.swift; sourceTree = "<group>"; };
+		AA0000092D000009000AA000 /* SMCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMCService.swift; sourceTree = "<group>"; };
+		AA000010200000100AA00000 /* BatteryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryService.swift; sourceTree = "<group>"; };
+		AA000011200000110AA00000 /* ChargingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingController.swift; sourceTree = "<group>"; };
+		AA000012200000120AA00000 /* ThermalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThermalService.swift; sourceTree = "<group>"; };
+		AA000013200000130AA00000 /* ClamshellService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClamshellService.swift; sourceTree = "<group>"; };
+		AA000014200000140AA00000 /* CalibrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationService.swift; sourceTree = "<group>"; };
+		AA000015200000150AA00000 /* ScheduleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleService.swift; sourceTree = "<group>"; };
+		AA000016200000160AA00000 /* PowerAssertionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerAssertionService.swift; sourceTree = "<group>"; };
+		AA000017200000170AA00000 /* MagSafeLEDService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagSafeLEDService.swift; sourceTree = "<group>"; };
+		AA000018200000180AA00000 /* MainPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPopoverView.swift; sourceTree = "<group>"; };
+		AA000019200000190AA00000 /* BatteryStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryStatusView.swift; sourceTree = "<group>"; };
+		AA000020200000200AA00000 /* ChargeLimitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeLimitView.swift; sourceTree = "<group>"; };
+		AA000021200000210AA00000 /* SailingModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SailingModeView.swift; sourceTree = "<group>"; };
+		AA000022200000220AA00000 /* CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationView.swift; sourceTree = "<group>"; };
+		AA000023200000230AA00000 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		AA000024200000240AA00000 /* PowerFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerFlowView.swift; sourceTree = "<group>"; };
+		AA000025200000250AA00000 /* MenuBarIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIconManager.swift; sourceTree = "<group>"; };
+		AA000026200000260AA00000 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AA000027200000270AA00000 /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
+		AA000028200000280AA00000 /* BatteryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryViewModel.swift; sourceTree = "<group>"; };
+		AA000029200000290AA00000 /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewModel.swift; sourceTree = "<group>"; };
+		AA000030200000300AA00000 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
+		AA000031200000310AA00000 /* SetChargeLimitIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetChargeLimitIntent.swift; sourceTree = "<group>"; };
+		AA000032200000320AA00000 /* GetBatteryInfoIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetBatteryInfoIntent.swift; sourceTree = "<group>"; };
+		AA000033200000330AA00000 /* ToggleChargingIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleChargingIntent.swift; sourceTree = "<group>"; };
+		AA000034200000340AA00000 /* StartSailingModeIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartSailingModeIntent.swift; sourceTree = "<group>"; };
+		AA000035200000350AA00000 /* BatteryShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryShortcuts.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,17 +175,107 @@
 			isa = PBXGroup;
 			children = (
 				FEB902552C92B16900A2A134 /* Info.plist */,
-				FEB902262C92A71700A2A134 /* BatteryManagerApp.swift */,
-				FEB902282C92A71700A2A134 /* ContentView.swift */,
-				FEB902582C92B6BB00A2A134 /* AppDelegate.swift */,
-				FEB9022A2C92A71800A2A134 /* Assets.xcassets */,
 				FEB9022F2C92A71800A2A134 /* BatteryManager.entitlements */,
+				AA0000A02D000100000AA000 /* App */,
+				AA0000A12D000101000AA000 /* Models */,
+				AA0000A22D000102000AA000 /* Services */,
+				AA0000A32D000103000AA000 /* Views */,
+				AA0000A42D000104000AA000 /* ViewModels */,
+				AA0000A52D000105000AA000 /* Intents */,
+				AA0000A62D000106000AA000 /* Helpers */,
+				FEB9022A2C92A71800A2A134 /* Assets.xcassets */,
 				FEB9022C2C92A71800A2A134 /* Preview Content */,
+			);
+			path = BatteryManager;
+			sourceTree = "<group>";
+		};
+		AA0000A02D000100000AA000 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FEB902262C92A71700A2A134 /* BatteryManagerApp.swift */,
+				FEB902582C92B6BB00A2A134 /* AppDelegate.swift */,
+				AA0000012D000001000AA000 /* AppState.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		AA0000A12D000101000AA000 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000022D000002000AA000 /* BatteryInfo.swift */,
+				AA0000032D000003000AA000 /* ChargingMode.swift */,
+				AA0000042D000004000AA000 /* SMCKey.swift */,
+				AA0000052D000005000AA000 /* Settings.swift */,
+				AA0000062D000006000AA000 /* CalibrationState.swift */,
+				AA0000072D000007000AA000 /* PowerSource.swift */,
+				AA0000082D000008000AA000 /* Schedule.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AA0000A22D000102000AA000 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000092D000009000AA000 /* SMCService.swift */,
+				AA000010200000100AA00000 /* BatteryService.swift */,
+				AA000011200000110AA00000 /* ChargingController.swift */,
+				AA000012200000120AA00000 /* ThermalService.swift */,
+				AA000013200000130AA00000 /* ClamshellService.swift */,
+				AA000014200000140AA00000 /* CalibrationService.swift */,
+				AA000015200000150AA00000 /* ScheduleService.swift */,
+				AA000016200000160AA00000 /* PowerAssertionService.swift */,
+				AA000017200000170AA00000 /* MagSafeLEDService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		AA0000A32D000103000AA000 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA000018200000180AA00000 /* MainPopoverView.swift */,
+				AA000019200000190AA00000 /* BatteryStatusView.swift */,
+				AA000020200000200AA00000 /* ChargeLimitView.swift */,
+				AA000021200000210AA00000 /* SailingModeView.swift */,
+				AA000022200000220AA00000 /* CalibrationView.swift */,
+				AA000023200000230AA00000 /* StatsView.swift */,
+				AA000024200000240AA00000 /* PowerFlowView.swift */,
+				AA000025200000250AA00000 /* MenuBarIconManager.swift */,
+				AA000026200000260AA00000 /* SettingsView.swift */,
+				AA000027200000270AA00000 /* ScheduleView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AA0000A42D000104000AA000 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AA000028200000280AA00000 /* BatteryViewModel.swift */,
+				AA000029200000290AA00000 /* StatsViewModel.swift */,
+				AA000030200000300AA00000 /* ScheduleViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AA0000A52D000105000AA000 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				AA000031200000310AA00000 /* SetChargeLimitIntent.swift */,
+				AA000032200000320AA00000 /* GetBatteryInfoIntent.swift */,
+				AA000033200000330AA00000 /* ToggleChargingIntent.swift */,
+				AA000034200000340AA00000 /* StartSailingModeIntent.swift */,
+				AA000035200000350AA00000 /* BatteryShortcuts.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		AA0000A62D000106000AA000 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
 				FE8E6D7E2C93E415002F3DCB /* SMCKit.h */,
 				FE8E6D7F2C93E415002F3DCB /* SMCKit.c */,
 				FE8E6D7D2C93E414002F3DCB /* BatteryManager-Bridging-Header.h */,
 			);
-			path = BatteryManager;
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		FEB9022C2C92A71800A2A134 /* Preview Content */ = {
@@ -286,8 +444,42 @@
 			files = (
 				FE8E6D802C93E415002F3DCB /* SMCKit.c in Sources */,
 				FEB902592C92B6BB00A2A134 /* AppDelegate.swift in Sources */,
-				FEB902292C92A71700A2A134 /* ContentView.swift in Sources */,
 				FEB902272C92A71700A2A134 /* BatteryManagerApp.swift in Sources */,
+				AA0000012D000001000AA001 /* AppState.swift in Sources */,
+				AA0000022D000002000AA001 /* BatteryInfo.swift in Sources */,
+				AA0000032D000003000AA001 /* ChargingMode.swift in Sources */,
+				AA0000042D000004000AA001 /* SMCKey.swift in Sources */,
+				AA0000052D000005000AA001 /* Settings.swift in Sources */,
+				AA0000062D000006000AA001 /* CalibrationState.swift in Sources */,
+				AA0000072D000007000AA001 /* PowerSource.swift in Sources */,
+				AA0000082D000008000AA001 /* Schedule.swift in Sources */,
+				AA0000092D000009000AA001 /* SMCService.swift in Sources */,
+				AA000010200000100AA00001 /* BatteryService.swift in Sources */,
+				AA000011200000110AA00001 /* ChargingController.swift in Sources */,
+				AA000012200000120AA00001 /* ThermalService.swift in Sources */,
+				AA000013200000130AA00001 /* ClamshellService.swift in Sources */,
+				AA000014200000140AA00001 /* CalibrationService.swift in Sources */,
+				AA000015200000150AA00001 /* ScheduleService.swift in Sources */,
+				AA000016200000160AA00001 /* PowerAssertionService.swift in Sources */,
+				AA000017200000170AA00001 /* MagSafeLEDService.swift in Sources */,
+				AA000018200000180AA00001 /* MainPopoverView.swift in Sources */,
+				AA000019200000190AA00001 /* BatteryStatusView.swift in Sources */,
+				AA000020200000200AA00001 /* ChargeLimitView.swift in Sources */,
+				AA000021200000210AA00001 /* SailingModeView.swift in Sources */,
+				AA000022200000220AA00001 /* CalibrationView.swift in Sources */,
+				AA000023200000230AA00001 /* StatsView.swift in Sources */,
+				AA000024200000240AA00001 /* PowerFlowView.swift in Sources */,
+				AA000025200000250AA00001 /* MenuBarIconManager.swift in Sources */,
+				AA000026200000260AA00001 /* SettingsView.swift in Sources */,
+				AA000027200000270AA00001 /* ScheduleView.swift in Sources */,
+				AA000028200000280AA00001 /* BatteryViewModel.swift in Sources */,
+				AA000029200000290AA00001 /* StatsViewModel.swift in Sources */,
+				AA000030200000300AA00001 /* ScheduleViewModel.swift in Sources */,
+				AA000031200000310AA00001 /* SetChargeLimitIntent.swift in Sources */,
+				AA000032200000320AA00001 /* GetBatteryInfoIntent.swift in Sources */,
+				AA000033200000330AA00001 /* ToggleChargingIntent.swift in Sources */,
+				AA000034200000340AA00001 /* StartSailingModeIntent.swift in Sources */,
+				AA000035200000350AA00001 /* BatteryShortcuts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -467,7 +659,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Self.BatteryManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "BatteryManager/BatteryManager-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "BatteryManager/Helpers/BatteryManager-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -498,7 +690,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Self.BatteryManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "BatteryManager/BatteryManager-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "BatteryManager/Helpers/BatteryManager-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
