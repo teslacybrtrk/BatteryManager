@@ -3,7 +3,6 @@ import SwiftUI
 enum PopoverTab: String, CaseIterable {
     case dashboard = "Dashboard"
     case stats = "Stats"
-    case powerFlow = "Power Flow"
     case schedule = "Schedule"
     case settings = "Settings"
 
@@ -11,7 +10,6 @@ enum PopoverTab: String, CaseIterable {
         switch self {
         case .dashboard: return "battery.75percent"
         case .stats: return "chart.bar.fill"
-        case .powerFlow: return "arrow.left.arrow.right"
         case .schedule: return "clock.fill"
         case .settings: return "gearshape.fill"
         }
@@ -118,8 +116,6 @@ struct MainPopoverView: View {
                     dashboardTab
                 case .stats:
                     StatsView(appState: appState)
-                case .powerFlow:
-                    PowerFlowView(appState: appState)
                 case .schedule:
                     ScheduleView(appState: appState, onAction: onScheduleAction)
                 case .settings:
@@ -219,6 +215,11 @@ struct MainPopoverView: View {
                     onLimitChanged: onLimitChanged,
                     onModeChanged: onModeChanged
                 )
+
+                Divider()
+                    .padding(.horizontal)
+
+                CompactPowerFlowView(appState: appState)
             }
             .padding()
         }
