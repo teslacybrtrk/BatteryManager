@@ -13,6 +13,13 @@ final class MenuBarIconManager {
     func updateIcon() {
         guard let button = statusItem?.button else { return }
 
+        // Hide until we have a real battery reading
+        guard appState.hasInitialReading else {
+            button.image = nil
+            button.title = ""
+            return
+        }
+
         let symbolName = batterySymbolName()
         let config = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
             .applying(.init(hierarchicalColor: .labelColor))
