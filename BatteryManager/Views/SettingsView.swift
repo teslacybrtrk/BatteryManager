@@ -211,7 +211,7 @@ struct SettingsView: View {
                                 Image(systemName: "arrow.down.circle.fill")
                                     .foregroundStyle(.blue)
                                     .font(.system(size: 11))
-                                Text("Update available")
+                                Text("Update available — switch to Dashboard to install")
                                     .font(.system(size: 11, weight: .medium))
                                     .foregroundStyle(.blue)
                                 Spacer()
