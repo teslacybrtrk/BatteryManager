@@ -301,7 +301,6 @@ struct SettingsToggle: View {
         Toggle(title, isOn: $isOn)
             .toggleStyle(.switch)
             .font(.system(size: 11))
-            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -313,9 +312,8 @@ struct SettingsToggleWithInfo: View {
     @State private var showingInfo = false
 
     var body: some View {
-        HStack(spacing: 4) {
-            Toggle(title, isOn: $isOn)
-                .toggleStyle(.switch)
+        HStack(spacing: 0) {
+            Text(title)
                 .font(.system(size: 11))
 
             Button {
@@ -326,14 +324,20 @@ struct SettingsToggleWithInfo: View {
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
+            .padding(.leading, 4)
             .popover(isPresented: $showingInfo, arrowEdge: .trailing) {
                 Text(info)
                     .font(.system(size: 11))
                     .padding(8)
                     .frame(width: 200)
             }
+
+            Spacer()
+
+            Toggle("", isOn: $isOn)
+                .toggleStyle(.switch)
+                .labelsHidden()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
