@@ -15,12 +15,16 @@ final class HelperInstaller {
         connection.remoteObjectInterface = NSXPCInterface(with: SMCHelperProtocol.self)
         connection.resume()
 
-        let proxy = connection.remoteObjectProxyWithErrorHandler { _ in
+        guard let proxy = connection.remoteObjectProxyWithErrorHandler({ _ in
             DispatchQueue.main.async { [weak self] in
                 self?.isInstalled = false
             }
             connection.invalidate()
-        } as! SMCHelperProtocol
+        }) as? SMCHelperProtocol else {
+            isInstalled = false
+            connection.invalidate()
+            return
+        }
 
         proxy.ping { [weak self] success in
             DispatchQueue.main.async {
