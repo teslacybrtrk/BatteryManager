@@ -6,6 +6,7 @@ final class UpdateChecker {
     var updateAvailable = false
     var isDownloading = false
     var isChecking = false
+    var checkError: String?
     var downloadProgress: Double = 0
     var lastCheckDate: Date?
 
@@ -22,22 +23,39 @@ final class UpdateChecker {
 
     func checkForUpdate() {
         isChecking = true
-        let url = URL(string: "https://api.github.com/repos/\(repo)/releases/tags/latest")!
+        checkError = nil
+        let url = URL(string: "https://api.github.com/repos/\(repo)/releases/latest")!
         var request = URLRequest(url: url)
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, _, error in
-            guard let data = data, error == nil else {
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            if let error = error {
                 DispatchQueue.main.async { [weak self] in
                     self?.isChecking = false
                     self?.lastCheckDate = Date()
+                    self?.checkError = "Network error"
+                    NSLog("[UpdateChecker] Network error: \(error.localizedDescription)")
                 }
                 return
             }
+
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+
+            guard let data = data, statusCode == 200 else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.isChecking = false
+                    self?.lastCheckDate = Date()
+                    self?.checkError = "Could not reach GitHub (HTTP \(statusCode))"
+                    NSLog("[UpdateChecker] HTTP \(statusCode) from GitHub API")
+                }
+                return
+            }
+
             guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
                 DispatchQueue.main.async { [weak self] in
                     self?.isChecking = false
                     self?.lastCheckDate = Date()
+                    self?.checkError = "Invalid response"
                 }
                 return
             }
@@ -47,6 +65,7 @@ final class UpdateChecker {
                 DispatchQueue.main.async { [weak self] in
                     self?.isChecking = false
                     self?.lastCheckDate = Date()
+                    self?.checkError = "Unexpected release format"
                 }
                 return
             }
@@ -56,6 +75,7 @@ final class UpdateChecker {
                 DispatchQueue.main.async { [weak self] in
                     self?.isChecking = false
                     self?.lastCheckDate = Date()
+                    self?.checkError = "Could not parse release version"
                 }
                 return
             }
@@ -83,6 +103,8 @@ final class UpdateChecker {
                 if isNew, let url = zipURL {
                     self.assetURL = url
                     self.updateAvailable = true
+                } else {
+                    self.updateAvailable = false
                 }
             }
         }.resume()
