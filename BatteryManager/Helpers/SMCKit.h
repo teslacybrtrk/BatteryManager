@@ -10,6 +10,14 @@
 #define SMC_CMD_READ_KEYINFO 9
 
 typedef struct {
+    char major;
+    char minor;
+    char build;
+    char reserved[1];
+    uint16_t release;
+} SMCKeyData_vers_t;
+
+typedef struct {
     uint16_t version;
     uint16_t length;
     uint32_t cpuPLimit;
@@ -25,6 +33,7 @@ typedef struct {
 
 typedef struct {
     uint32_t key;
+    SMCKeyData_vers_t vers;
     SMCKeyData_pLimitData_t pLimitData;
     SMCKeyData_keyInfo_t keyInfo;
     uint8_t result;

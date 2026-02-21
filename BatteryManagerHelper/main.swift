@@ -35,7 +35,7 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
         if result == kIOReturnSuccess {
             connection = conn
             smcConnected = true
-            helperLog("[Helper] SMC connection opened successfully")
+            helperLog("[Helper] SMC connection opened successfully (SMCKeyData_t size: \(MemoryLayout<SMCKeyData_t>.size))")
             detectCapabilities()
         } else {
             helperLog("[Helper] Failed to open SMC: \(result)")
