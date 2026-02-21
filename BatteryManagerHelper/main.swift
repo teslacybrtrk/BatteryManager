@@ -1,4 +1,5 @@
 import Foundation
+import IOKit.pwr_mgt
 
 // MARK: - File Logger
 
@@ -44,6 +45,10 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
     private var useTahoeAdapter = false   // CHIE vs CH0I
     private var hasCH0B = false
     private var hasCH0I = false
+
+    // IOPMAssertion-based charging control (works when SMC keys are dead letters)
+    private var chargeInhibitAssertion: IOPMAssertionID = 0
+    private var disableInflowAssertion: IOPMAssertionID = 0
 
     override init() {
         super.init()
@@ -155,7 +160,7 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
     }
 
     func getVersion(reply: @escaping (String) -> Void) {
-        reply("2.3.0")
+        reply("2.4.0")
     }
 
     func readBatteryChargeLevel(reply: @escaping (UInt8) -> Void) {
@@ -191,7 +196,36 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
 
             var anySuccess = false
 
-            // Write ALL available charging keys for maximum compatibility
+            // Method 1: IOPMAssertion (works on M3+ where SMC keys are ignored)
+            if enabled {
+                if chargeInhibitAssertion != 0 {
+                    let r = IOPMAssertionRelease(chargeInhibitAssertion)
+                    helperLog("[Helper] Released ChargeInhibit assertion (code: \(String(format: "0x%08x", r)))")
+                    chargeInhibitAssertion = 0
+                    anySuccess = true
+                }
+            } else {
+                if chargeInhibitAssertion == 0 {
+                    var assertionID: IOPMAssertionID = 0
+                    let r = IOPMAssertionCreateWithName(
+                        "ChargeInhibit" as CFString,
+                        IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                        "BatteryManager charge limit reached" as CFString,
+                        &assertionID
+                    )
+                    if r == kIOReturnSuccess {
+                        chargeInhibitAssertion = assertionID
+                        anySuccess = true
+                        helperLog("[Helper] Created ChargeInhibit assertion (id: \(assertionID))")
+                    } else {
+                        helperLog("[Helper] Failed to create ChargeInhibit assertion (code: \(String(format: "0x%08x", r)))")
+                    }
+                } else {
+                    anySuccess = true  // Already asserted
+                }
+            }
+
+            // Method 2: SMC keys (fallback for older firmware)
             if useTahoeCharging {
                 let s: Bool
                 if enabled {
@@ -201,8 +235,6 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
                 }
                 if s { anySuccess = true }
             }
-
-            // Also write pre-Tahoe keys if available (some firmware responds to both)
             if hasCH0B {
                 let value: UInt8 = enabled ? 0x00 : 0x02
                 let s1 = writeKey1Byte("CH0B", value: value)
@@ -220,12 +252,40 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
 
             var anySuccess = false
 
-            // Write ALL available adapter keys
+            // Method 1: IOPMAssertion DisableInflow (works on M3+)
+            if inhibit {
+                if disableInflowAssertion == 0 {
+                    var assertionID: IOPMAssertionID = 0
+                    let r = IOPMAssertionCreateWithName(
+                        "DisableInflow" as CFString,
+                        IOPMAssertionLevel(kIOPMAssertionLevelOn),
+                        "BatteryManager disabling power inflow" as CFString,
+                        &assertionID
+                    )
+                    if r == kIOReturnSuccess {
+                        disableInflowAssertion = assertionID
+                        anySuccess = true
+                        helperLog("[Helper] Created DisableInflow assertion (id: \(assertionID))")
+                    } else {
+                        helperLog("[Helper] Failed to create DisableInflow assertion (code: \(String(format: "0x%08x", r)))")
+                    }
+                } else {
+                    anySuccess = true  // Already asserted
+                }
+            } else {
+                if disableInflowAssertion != 0 {
+                    let r = IOPMAssertionRelease(disableInflowAssertion)
+                    helperLog("[Helper] Released DisableInflow assertion (code: \(String(format: "0x%08x", r)))")
+                    disableInflowAssertion = 0
+                    anySuccess = true
+                }
+            }
+
+            // Method 2: SMC keys (fallback)
             if useTahoeAdapter {
                 let value: UInt8 = inhibit ? 0x08 : 0x00
                 if writeKey1Byte("CHIE", value: value) { anySuccess = true }
             }
-
             if hasCH0I {
                 let value: UInt8 = inhibit ? 0x01 : 0x00
                 if writeKey1Byte("CH0I", value: value) { anySuccess = true }
