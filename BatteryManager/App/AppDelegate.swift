@@ -114,6 +114,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if !smc.useXPC {
             appState.needsHelperInstall = true
             installer.checkIfInstalled()
+        } else {
+            // Helper is connected — check if it needs updating
+            checkHelperVersion(smc: smc, installer: installer)
         }
 
         // Apply saved settings
@@ -225,6 +228,39 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     // MARK: - Helper Install
+
+    private static let requiredHelperVersion = "2.0.0"
+
+    private func checkHelperVersion(smc: SMCService, installer: HelperInstaller) {
+        let conn = NSXPCConnection(machServiceName: "com.batterymanager.helper", options: .privileged)
+        conn.remoteObjectInterface = NSXPCInterface(with: SMCHelperProtocol.self)
+        conn.resume()
+
+        guard let proxy = conn.remoteObjectProxyWithErrorHandler({ _ in
+            conn.invalidate()
+        }) as? SMCHelperProtocol else {
+            conn.invalidate()
+            return
+        }
+
+        proxy.getVersion { [weak self] version in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                conn.invalidate()
+                if version < Self.requiredHelperVersion {
+                    appLog("[AppDelegate] Helper version \(version) is outdated (need \(Self.requiredHelperVersion)), prompting reinstall")
+                    self.appState.needsHelperInstall = true
+                } else {
+                    appLog("[AppDelegate] Helper version \(version) is up to date")
+                }
+            }
+        }
+
+        // Timeout after 3 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            conn.invalidate()
+        }
+    }
 
     private func reconnectAfterHelperInstall() {
         smcService?.reconnect()
