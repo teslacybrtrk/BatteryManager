@@ -307,8 +307,13 @@ struct SettingsView: View {
     }
 
     private func openLogsWindow() {
+        let screen = NSScreen.main ?? NSScreen.screens.first
+        let screenSize = screen?.visibleFrame.size ?? NSSize(width: 1440, height: 900)
+        let width = screenSize.width * 0.5
+        let height = screenSize.height * 0.5
+
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 800, height: 500),
+            contentRect: NSRect(x: 0, y: 0, width: width, height: height),
             styleMask: [.titled, .closable, .resizable, .miniaturizable],
             backing: .buffered,
             defer: false
