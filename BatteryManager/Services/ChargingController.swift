@@ -45,10 +45,13 @@ final class ChargingController {
 
     func disableCharging() {
         let success = smcService.setChargingEnabled(false)
+        print("[ChargingController] disableCharging() result: \(success)")
         if success {
             DispatchQueue.main.async { [weak self] in
                 self?.appState.isChargingEnabled = false
             }
+        } else {
+            print("[ChargingController] WARNING: Failed to disable charging via SMC")
         }
     }
 

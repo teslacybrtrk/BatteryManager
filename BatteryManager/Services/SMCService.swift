@@ -186,29 +186,51 @@ final class SMCService {
     }
 
     func setBatteryChargeLimit(_ limit: UInt8) -> Bool {
+        print("[SMCService] setBatteryChargeLimit(\(limit)) — useXPC=\(useXPC), isConnected=\(isConnected)")
         if useXPC {
             let semaphore = DispatchSemaphore(value: 0)
             var result = false
-            xpcProxy()?.setBatteryChargeLimit(limit) { success in
+            let proxy = xpcProxy()
+            if proxy == nil {
+                print("[SMCService] setBatteryChargeLimit: proxy is nil, cannot send command")
+                return false
+            }
+            proxy?.setBatteryChargeLimit(limit) { success in
                 result = success
                 semaphore.signal()
             }
-            return semaphore.wait(timeout: .now() + 5) == .success ? result : false
+            let waited = semaphore.wait(timeout: .now() + 5)
+            let success = waited == .success ? result : false
+            print("[SMCService] setBatteryChargeLimit XPC result: \(success) (timedOut=\(waited == .timedOut))")
+            return success
         }
-        return writeKey(.batteryChargeLevelMax, dataType: "ui8", size: 1, byte0: limit)
+        let success = writeKey(.batteryChargeLevelMax, dataType: "ui8", size: 1, byte0: limit)
+        print("[SMCService] setBatteryChargeLimit direct SMC result: \(success)")
+        return success
     }
 
     func setChargingEnabled(_ enabled: Bool) -> Bool {
+        print("[SMCService] setChargingEnabled(\(enabled)) — useXPC=\(useXPC), isConnected=\(isConnected)")
         if useXPC {
             let semaphore = DispatchSemaphore(value: 0)
             var result = false
-            xpcProxy()?.setChargingEnabled(enabled) { success in
+            let proxy = xpcProxy()
+            if proxy == nil {
+                print("[SMCService] setChargingEnabled: proxy is nil, cannot send command")
+                return false
+            }
+            proxy?.setChargingEnabled(enabled) { success in
                 result = success
                 semaphore.signal()
             }
-            return semaphore.wait(timeout: .now() + 5) == .success ? result : false
+            let waited = semaphore.wait(timeout: .now() + 5)
+            let success = waited == .success ? result : false
+            print("[SMCService] setChargingEnabled XPC result: \(success) (timedOut=\(waited == .timedOut))")
+            return success
         }
-        return writeKey(.chargingControl, dataType: "ui8", size: 1, byte0: enabled ? 0 : 2)
+        let success = writeKey(.chargingControl, dataType: "ui8", size: 1, byte0: enabled ? 0 : 2)
+        print("[SMCService] setChargingEnabled direct SMC result: \(success)")
+        return success
     }
 
     func setChargeInhibit(_ inhibit: Bool) -> Bool {
