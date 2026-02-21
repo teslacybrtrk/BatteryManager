@@ -45,13 +45,13 @@ final class ChargingController {
 
     func disableCharging() {
         let success = smcService.setChargingEnabled(false)
-        print("[ChargingController] disableCharging() result: \(success)")
+        appLog("[ChargingController] disableCharging() result: \(success)")
         if success {
             DispatchQueue.main.async { [weak self] in
                 self?.appState.isChargingEnabled = false
             }
         } else {
-            print("[ChargingController] WARNING: Failed to disable charging via SMC")
+            appLog("[ChargingController] WARNING: Failed to disable charging via SMC")
         }
     }
 
@@ -152,13 +152,13 @@ final class ChargingController {
         if level >= limit {
             disableCharging()
             powerAssertionService?.allowSleep()
-            print("[ChargingController] Battery \(level)% >= limit \(limit)%, charging disabled")
+            appLog("[ChargingController] Battery \(level)% >= limit \(limit)%, charging disabled")
         } else {
             enableCharging()
             if preventSleep {
                 powerAssertionService?.preventSleep(reason: "Charging to limit")
             }
-            print("[ChargingController] Battery \(level)% < limit \(limit)%, charging enabled")
+            appLog("[ChargingController] Battery \(level)% < limit \(limit)%, charging enabled")
         }
     }
 

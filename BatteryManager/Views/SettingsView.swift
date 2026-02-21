@@ -285,11 +285,32 @@ struct SettingsView: View {
                     .buttonStyle(.bordered)
                     .tint(.red)
                     .padding(.top, 2)
+
+                    Button {
+                        showingLogs.toggle()
+                    } label: {
+                        HStack {
+                            Image(systemName: "doc.text.magnifyingglass")
+                            Text(showingLogs ? "Hide Logs" : "Show Logs")
+                        }
+                        .font(.system(size: 11))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
+                    }
+                    .buttonStyle(.bordered)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 2)
+                }
+
+                if showingLogs {
+                    LogsView()
                 }
             }
             .padding()
         }
     }
+
+    @State private var showingLogs = false
 
     private static func formatCheckDate(_ date: Date) -> String {
         if Calendar.current.isDateInToday(date) {

@@ -13,15 +13,15 @@ final class SMCService {
         if connectViaXPC() {
             useXPC = true
             isConnected = true
-            print("[SMCService] Connected via XPC helper")
+            appLog("[SMCService] Connected via XPC helper")
         } else {
             // Fall back to direct SMC access
             let result = SMCOpen(&connection)
             isConnected = (result == kIOReturnSuccess)
             if isConnected {
-                print("[SMCService] Connected via direct SMC access")
+                appLog("[SMCService] Connected via direct SMC access")
             } else {
-                print("[SMCService] Failed to open SMC connection: \(result)")
+                appLog("[SMCService] Failed to open SMC connection: \(result)")
             }
         }
     }
@@ -49,14 +49,14 @@ final class SMCService {
         if connectViaXPC() {
             useXPC = true
             isConnected = true
-            print("[SMCService] Reconnected via XPC helper")
+            appLog("[SMCService] Reconnected via XPC helper")
         } else {
             let result = SMCOpen(&connection)
             isConnected = (result == kIOReturnSuccess)
             if isConnected {
-                print("[SMCService] Reconnected via direct SMC access")
+                appLog("[SMCService] Reconnected via direct SMC access")
             } else {
-                print("[SMCService] Reconnect failed: \(result)")
+                appLog("[SMCService] Reconnect failed: \(result)")
             }
         }
     }
@@ -67,11 +67,11 @@ final class SMCService {
         let conn = NSXPCConnection(machServiceName: "com.batterymanager.helper", options: .privileged)
         conn.remoteObjectInterface = NSXPCInterface(with: SMCHelperProtocol.self)
         conn.interruptionHandler = { [weak self] in
-            print("[SMCService] XPC connection interrupted, attempting reconnect...")
+            appLog("[SMCService] XPC connection interrupted, attempting reconnect...")
             self?.reconnectXPC()
         }
         conn.invalidationHandler = { [weak self] in
-            print("[SMCService] XPC connection invalidated")
+            appLog("[SMCService] XPC connection invalidated")
             self?.xpcConnection = nil
         }
         conn.resume()
@@ -116,13 +116,13 @@ final class SMCService {
 
     private func xpcProxy() -> SMCHelperProtocol? {
         guard let conn = xpcConnection else {
-            print("[SMCService] XPC proxy requested but no connection")
+            appLog("[SMCService] XPC proxy requested but no connection")
             return nil
         }
         guard let proxy = conn.remoteObjectProxyWithErrorHandler({ error in
-            print("[SMCService] XPC proxy error: \(error)")
+            appLog("[SMCService] XPC proxy error: \(error)")
         }) as? SMCHelperProtocol else {
-            print("[SMCService] XPC proxy cast failed, attempting reconnect")
+            appLog("[SMCService] XPC proxy cast failed, attempting reconnect")
             reconnectXPC()
             return nil
         }
@@ -137,7 +137,7 @@ final class SMCService {
             var val = SMCVal_t()
             let result = SMCReadKey(connection, key.rawValue, &val)
             guard result == kIOReturnSuccess else {
-                print("[SMCService] Failed to read key \(key.rawValue): \(result)")
+                appLog("[SMCService] Failed to read key \(key.rawValue): \(result)")
                 return nil
             }
             return val
@@ -162,7 +162,7 @@ final class SMCService {
             writeVal.bytes.0 = byte0
             let result = SMCWriteKey(connection, writeVal)
             if result != kIOReturnSuccess {
-                print("[SMCService] Failed to write key \(key.rawValue): \(result)")
+                appLog("[SMCService] Failed to write key \(key.rawValue): \(result)")
                 return false
             }
             return true
@@ -186,13 +186,13 @@ final class SMCService {
     }
 
     func setBatteryChargeLimit(_ limit: UInt8) -> Bool {
-        print("[SMCService] setBatteryChargeLimit(\(limit)) — useXPC=\(useXPC), isConnected=\(isConnected)")
+        appLog("[SMCService] setBatteryChargeLimit(\(limit)) — useXPC=\(useXPC), isConnected=\(isConnected)")
         if useXPC {
             let semaphore = DispatchSemaphore(value: 0)
             var result = false
             let proxy = xpcProxy()
             if proxy == nil {
-                print("[SMCService] setBatteryChargeLimit: proxy is nil, cannot send command")
+                appLog("[SMCService] setBatteryChargeLimit: proxy is nil, cannot send command")
                 return false
             }
             proxy?.setBatteryChargeLimit(limit) { success in
@@ -201,22 +201,22 @@ final class SMCService {
             }
             let waited = semaphore.wait(timeout: .now() + 5)
             let success = waited == .success ? result : false
-            print("[SMCService] setBatteryChargeLimit XPC result: \(success) (timedOut=\(waited == .timedOut))")
+            appLog("[SMCService] setBatteryChargeLimit XPC result: \(success) (timedOut=\(waited == .timedOut))")
             return success
         }
         let success = writeKey(.batteryChargeLevelMax, dataType: "ui8", size: 1, byte0: limit)
-        print("[SMCService] setBatteryChargeLimit direct SMC result: \(success)")
+        appLog("[SMCService] setBatteryChargeLimit direct SMC result: \(success)")
         return success
     }
 
     func setChargingEnabled(_ enabled: Bool) -> Bool {
-        print("[SMCService] setChargingEnabled(\(enabled)) — useXPC=\(useXPC), isConnected=\(isConnected)")
+        appLog("[SMCService] setChargingEnabled(\(enabled)) — useXPC=\(useXPC), isConnected=\(isConnected)")
         if useXPC {
             let semaphore = DispatchSemaphore(value: 0)
             var result = false
             let proxy = xpcProxy()
             if proxy == nil {
-                print("[SMCService] setChargingEnabled: proxy is nil, cannot send command")
+                appLog("[SMCService] setChargingEnabled: proxy is nil, cannot send command")
                 return false
             }
             proxy?.setChargingEnabled(enabled) { success in
@@ -225,11 +225,11 @@ final class SMCService {
             }
             let waited = semaphore.wait(timeout: .now() + 5)
             let success = waited == .success ? result : false
-            print("[SMCService] setChargingEnabled XPC result: \(success) (timedOut=\(waited == .timedOut))")
+            appLog("[SMCService] setChargingEnabled XPC result: \(success) (timedOut=\(waited == .timedOut))")
             return success
         }
         let success = writeKey(.chargingControl, dataType: "ui8", size: 1, byte0: enabled ? 0 : 2)
-        print("[SMCService] setChargingEnabled direct SMC result: \(success)")
+        appLog("[SMCService] setChargingEnabled direct SMC result: \(success)")
         return success
     }
 
