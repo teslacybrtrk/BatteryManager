@@ -138,7 +138,7 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
     }
 
     func getVersion(reply: @escaping (String) -> Void) {
-        reply("2.1.0")
+        reply("2.2.0")
     }
 
     func readBatteryChargeLevel(reply: @escaping (UInt8) -> Void) {

@@ -308,12 +308,13 @@ struct SettingsView: View {
 
     private func openLogsWindow() {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 500, height: 400),
-            styleMask: [.titled, .closable, .resizable],
+            contentRect: NSRect(x: 0, y: 0, width: 600, height: 500),
+            styleMask: [.titled, .closable, .resizable, .miniaturizable],
             backing: .buffered,
             defer: false
         )
         window.title = "BatteryManager Logs"
+        window.minSize = NSSize(width: 400, height: 300)
         window.contentViewController = NSHostingController(rootView: LogsView())
         window.center()
         window.makeKeyAndOrderFront(nil)
