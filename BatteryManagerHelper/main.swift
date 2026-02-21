@@ -7,6 +7,10 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
     private var smcConnected = false
     private let smcQueue = DispatchQueue(label: "com.batterymanager.helper.smc")
 
+    // Key capabilities detected at startup
+    private var useTahoeCharging = false  // CHTE (4-byte) vs CH0B+CH0C (1-byte)
+    private var useTahoeAdapter = false   // CHIE vs CH0I
+
     override init() {
         super.init()
         var conn: io_connect_t = 0
@@ -15,6 +19,7 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
             connection = conn
             smcConnected = true
             NSLog("[Helper] SMC connection opened successfully")
+            detectCapabilities()
         } else {
             NSLog("[Helper] Failed to open SMC: \(result)")
         }
@@ -24,6 +29,80 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
         if smcConnected {
             SMCClose(connection)
         }
+    }
+
+    /// Detect which SMC keys are available on this hardware
+    private func detectCapabilities() {
+        let hasCH0B = canReadKey("CH0B")
+        let hasCH0C = canReadKey("CH0C")
+        let hasCHTE = canReadKey("CHTE")
+        let hasCH0I = canReadKey("CH0I")
+        let hasCHIE = canReadKey("CHIE")
+
+        if hasCHTE {
+            useTahoeCharging = true
+            NSLog("[Helper] Using Tahoe charging key (CHTE)")
+        } else if hasCH0B && hasCH0C {
+            useTahoeCharging = false
+            NSLog("[Helper] Using pre-Tahoe charging keys (CH0B+CH0C)")
+        } else {
+            NSLog("[Helper] WARNING: No known charging keys found (CH0B=\(hasCH0B), CH0C=\(hasCH0C), CHTE=\(hasCHTE))")
+        }
+
+        if hasCHIE {
+            useTahoeAdapter = true
+            NSLog("[Helper] Using Tahoe adapter key (CHIE)")
+        } else if hasCH0I {
+            useTahoeAdapter = false
+            NSLog("[Helper] Using pre-Tahoe adapter key (CH0I)")
+        } else {
+            NSLog("[Helper] WARNING: No known adapter keys found")
+        }
+    }
+
+    private func canReadKey(_ key: String) -> Bool {
+        var val = SMCVal_t()
+        let result = SMCReadKey(connection, key, &val)
+        let success = result == kIOReturnSuccess
+        NSLog("[Helper] Key \(key) readable: \(success)")
+        return success
+    }
+
+    // MARK: - SMC Write Helpers
+
+    private func writeKey1Byte(_ key: String, value: UInt8) -> Bool {
+        var writeVal = SMCVal_t()
+        withUnsafeMutablePointer(to: &writeVal.key) { keyPtr in
+            _ = keyPtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, key) }
+        }
+        writeVal.dataSize = 1
+        withUnsafeMutablePointer(to: &writeVal.dataType) { typePtr in
+            _ = typePtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "ui8") }
+        }
+        writeVal.bytes.0 = value
+        let result = SMCWriteKey(connection, writeVal)
+        let success = result == kIOReturnSuccess
+        NSLog("[Helper] Write \(key)=\(value) result: \(success) (code: \(String(format: "0x%08x", result)))")
+        return success
+    }
+
+    private func writeKey4Bytes(_ key: String, b0: UInt8, b1: UInt8, b2: UInt8, b3: UInt8) -> Bool {
+        var writeVal = SMCVal_t()
+        withUnsafeMutablePointer(to: &writeVal.key) { keyPtr in
+            _ = keyPtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, key) }
+        }
+        writeVal.dataSize = 4
+        withUnsafeMutablePointer(to: &writeVal.dataType) { typePtr in
+            _ = typePtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "ui32") }
+        }
+        writeVal.bytes.0 = b0
+        writeVal.bytes.1 = b1
+        writeVal.bytes.2 = b2
+        writeVal.bytes.3 = b3
+        let result = SMCWriteKey(connection, writeVal)
+        let success = result == kIOReturnSuccess
+        NSLog("[Helper] Write \(key)=[\(b0),\(b1),\(b2),\(b3)] result: \(success) (code: \(String(format: "0x%08x", result)))")
+        return success
     }
 
     // MARK: - NSXPCListenerDelegate
@@ -42,87 +121,82 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
     }
 
     func getVersion(reply: @escaping (String) -> Void) {
-        reply("1.0.0")
+        reply("2.0.0")
     }
 
     func readBatteryChargeLevel(reply: @escaping (UInt8) -> Void) {
         smcQueue.sync {
             guard smcConnected else { reply(0); return }
-            var val = SMCVal_t()
-            let result = SMCReadKey(connection, "BCLM", &val)
-            if result == kIOReturnSuccess {
-                reply(val.bytes.0)
-            } else {
-                reply(0)
+            // Try BUIC first (Apple Silicon), then BCLM (Intel)
+            for key in ["BUIC", "BCLM"] {
+                var val = SMCVal_t()
+                let result = SMCReadKey(connection, key, &val)
+                if result == kIOReturnSuccess {
+                    reply(val.bytes.0)
+                    return
+                }
             }
+            reply(0)
         }
     }
 
     func setBatteryChargeLimit(_ limit: UInt8, reply: @escaping (Bool) -> Void) {
         smcQueue.sync {
             guard smcConnected else { reply(false); return }
-            var writeVal = SMCVal_t()
-            withUnsafeMutablePointer(to: &writeVal.key) { keyPtr in
-                _ = keyPtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "BCLM") }
-            }
-            writeVal.dataSize = 1
-            withUnsafeMutablePointer(to: &writeVal.dataType) { typePtr in
-                _ = typePtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "ui8") }
-            }
-            writeVal.bytes.0 = limit
-            let result = SMCWriteKey(connection, writeVal)
-            reply(result == kIOReturnSuccess)
+            // BCLM doesn't work on Tahoe firmware; charge limiting is done
+            // via software control (disabling charging at threshold) instead.
+            // Try BCLM anyway for older firmware compatibility.
+            let success = writeKey1Byte("BCLM", value: limit)
+            reply(success)
         }
     }
 
     func setChargingEnabled(_ enabled: Bool, reply: @escaping (Bool) -> Void) {
         smcQueue.sync {
             guard smcConnected else { reply(false); return }
-            var writeVal = SMCVal_t()
-            withUnsafeMutablePointer(to: &writeVal.key) { keyPtr in
-                _ = keyPtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "CH0B") }
+
+            if useTahoeCharging {
+                // Tahoe: CHTE is 4 bytes
+                let success: Bool
+                if enabled {
+                    success = writeKey4Bytes("CHTE", b0: 0x00, b1: 0x00, b2: 0x00, b3: 0x00)
+                } else {
+                    success = writeKey4Bytes("CHTE", b0: 0x01, b1: 0x00, b2: 0x00, b3: 0x00)
+                }
+                reply(success)
+            } else {
+                // Pre-Tahoe: write both CH0B and CH0C
+                let value: UInt8 = enabled ? 0x00 : 0x02
+                let s1 = writeKey1Byte("CH0B", value: value)
+                let s2 = writeKey1Byte("CH0C", value: value)
+                reply(s1 && s2)
             }
-            writeVal.dataSize = 1
-            withUnsafeMutablePointer(to: &writeVal.dataType) { typePtr in
-                _ = typePtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "ui8") }
-            }
-            writeVal.bytes.0 = enabled ? 0 : 2
-            let result = SMCWriteKey(connection, writeVal)
-            reply(result == kIOReturnSuccess)
         }
     }
 
     func setChargeInhibit(_ inhibit: Bool, reply: @escaping (Bool) -> Void) {
         smcQueue.sync {
             guard smcConnected else { reply(false); return }
-            var writeVal = SMCVal_t()
-            withUnsafeMutablePointer(to: &writeVal.key) { keyPtr in
-                _ = keyPtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "CH0I") }
+
+            if useTahoeAdapter {
+                // Tahoe: CHIE
+                let value: UInt8 = inhibit ? 0x08 : 0x00
+                let success = writeKey1Byte("CHIE", value: value)
+                reply(success)
+            } else {
+                // Pre-Tahoe: CH0I
+                let value: UInt8 = inhibit ? 0x01 : 0x00
+                let success = writeKey1Byte("CH0I", value: value)
+                reply(success)
             }
-            writeVal.dataSize = 1
-            withUnsafeMutablePointer(to: &writeVal.dataType) { typePtr in
-                _ = typePtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "ui8") }
-            }
-            writeVal.bytes.0 = inhibit ? 1 : 0
-            let result = SMCWriteKey(connection, writeVal)
-            reply(result == kIOReturnSuccess)
         }
     }
 
     func setForceCharging(_ force: Bool, reply: @escaping (Bool) -> Void) {
         smcQueue.sync {
             guard smcConnected else { reply(false); return }
-            var writeVal = SMCVal_t()
-            withUnsafeMutablePointer(to: &writeVal.key) { keyPtr in
-                _ = keyPtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "BFCL") }
-            }
-            writeVal.dataSize = 1
-            withUnsafeMutablePointer(to: &writeVal.dataType) { typePtr in
-                _ = typePtr.withMemoryRebound(to: Int8.self, capacity: 5) { strcpy($0, "ui8") }
-            }
-            writeVal.bytes.0 = force ? 1 : 0
-            let result = SMCWriteKey(connection, writeVal)
-            reply(result == kIOReturnSuccess)
+            let success = writeKey1Byte("BFCL", value: force ? 1 : 0)
+            reply(success)
         }
     }
 
