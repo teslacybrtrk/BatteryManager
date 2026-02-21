@@ -1,5 +1,22 @@
 import Foundation
 
+// MARK: - File Logger
+
+/// Logs to /tmp/batterymanager-helper.log so messages aren't redacted by macOS privacy
+private func helperLog(_ message: String) {
+    let timestamp = ISO8601DateFormatter().string(from: Date())
+    let line = "[\(timestamp)] \(message)\n"
+    NSLog("%{public}s", message)
+    let path = "/tmp/batterymanager-helper.log"
+    if let handle = FileHandle(forWritingAtPath: path) {
+        handle.seekToEndOfFile()
+        handle.write(Data(line.utf8))
+        handle.closeFile()
+    } else {
+        FileManager.default.createFile(atPath: path, contents: Data(line.utf8))
+    }
+}
+
 // MARK: - SMC Helper Delegate
 
 final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtocol {
@@ -18,10 +35,10 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
         if result == kIOReturnSuccess {
             connection = conn
             smcConnected = true
-            NSLog("[Helper] SMC connection opened successfully")
+            helperLog("[Helper] SMC connection opened successfully")
             detectCapabilities()
         } else {
-            NSLog("[Helper] Failed to open SMC: \(result)")
+            helperLog("[Helper] Failed to open SMC: \(result)")
         }
     }
 
@@ -41,22 +58,22 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
 
         if hasCHTE {
             useTahoeCharging = true
-            NSLog("[Helper] Using Tahoe charging key (CHTE)")
+            helperLog("[Helper] Using Tahoe charging key (CHTE)")
         } else if hasCH0B && hasCH0C {
             useTahoeCharging = false
-            NSLog("[Helper] Using pre-Tahoe charging keys (CH0B+CH0C)")
+            helperLog("[Helper] Using pre-Tahoe charging keys (CH0B+CH0C)")
         } else {
-            NSLog("[Helper] WARNING: No known charging keys found (CH0B=\(hasCH0B), CH0C=\(hasCH0C), CHTE=\(hasCHTE))")
+            helperLog("[Helper] WARNING: No known charging keys found (CH0B=\(hasCH0B), CH0C=\(hasCH0C), CHTE=\(hasCHTE))")
         }
 
         if hasCHIE {
             useTahoeAdapter = true
-            NSLog("[Helper] Using Tahoe adapter key (CHIE)")
+            helperLog("[Helper] Using Tahoe adapter key (CHIE)")
         } else if hasCH0I {
             useTahoeAdapter = false
-            NSLog("[Helper] Using pre-Tahoe adapter key (CH0I)")
+            helperLog("[Helper] Using pre-Tahoe adapter key (CH0I)")
         } else {
-            NSLog("[Helper] WARNING: No known adapter keys found")
+            helperLog("[Helper] WARNING: No known adapter keys found")
         }
     }
 
@@ -64,7 +81,7 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
         var val = SMCVal_t()
         let result = SMCReadKey(connection, key, &val)
         let success = result == kIOReturnSuccess
-        NSLog("[Helper] Key \(key) readable: \(success)")
+        helperLog("[Helper] Key \(key) readable: \(success)")
         return success
     }
 
@@ -82,7 +99,7 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
         writeVal.bytes.0 = value
         let result = SMCWriteKey(connection, writeVal)
         let success = result == kIOReturnSuccess
-        NSLog("[Helper] Write \(key)=\(value) result: \(success) (code: \(String(format: "0x%08x", result)))")
+        helperLog("[Helper] Write \(key)=\(value) result: \(success) (code: \(String(format: "0x%08x", result)))")
         return success
     }
 
@@ -101,7 +118,7 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
         writeVal.bytes.3 = b3
         let result = SMCWriteKey(connection, writeVal)
         let success = result == kIOReturnSuccess
-        NSLog("[Helper] Write \(key)=[\(b0),\(b1),\(b2),\(b3)] result: \(success) (code: \(String(format: "0x%08x", result)))")
+        helperLog("[Helper] Write \(key)=[\(b0),\(b1),\(b2),\(b3)] result: \(success) (code: \(String(format: "0x%08x", result)))")
         return success
     }
 
@@ -227,5 +244,5 @@ let listener = NSXPCListener(machServiceName: "com.batterymanager.helper")
 listener.delegate = delegate
 listener.resume()
 
-NSLog("[Helper] BatteryManagerHelper started, listening on com.batterymanager.helper")
+helperLog("[Helper] BatteryManagerHelper started, listening on com.batterymanager.helper")
 RunLoop.current.run()
