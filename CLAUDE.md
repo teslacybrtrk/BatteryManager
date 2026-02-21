@@ -41,9 +41,29 @@ IOKit / AppleSMC kernel driver
 - **SMCKit.c/.h** — C functions (`SMCOpen`, `SMCClose`, `SMCReadKey`, `SMCWriteKey`) wrapping `IOConnectCallStructMethod` for direct SMC communication.
 - **BatteryManager-Bridging-Header.h** — Exposes SMCKit C API to Swift.
 
+## Release & Updates
+
+Releases are **fully automated** via GitHub Actions (`.github/workflows/build-and-release.yml`):
+
+- Every push/merge to `main` triggers a build
+- The workflow builds, ad-hoc signs, zips, and creates/updates the `latest` GitHub Release
+- **Do NOT tell the user to build locally, create zips, or manually create releases** — just merge PRs and the CI handles everything
+- End users update via the in-app "Check for Updates" button in Settings, which checks the GitHub Releases API
+- After updating, users are prompted to reinstall the helper if the helper version is outdated
+
+## Privileged Helper Tool
+
+The app uses a privileged XPC helper (`BatteryManagerHelper`) installed to `/Library/PrivilegedHelperTools/` for SMC write access. The app can read SMC without root, but writing (charging control) requires the helper.
+
+- Helper version is checked on launch via XPC `getVersion()` call
+- If the helper is missing or outdated (< required version in `AppDelegate.requiredHelperVersion`), the user is prompted to install/reinstall
+- On M3+ Macs with macOS Sequoia (Tahoe firmware), uses `CHTE` (4-byte) and `CHIE` keys instead of deprecated `CH0B`/`CH0C`/`CH0I`
+- Key detection happens at helper startup via read probing
+
 ## Key Technical Details
 
-- The app requires elevated privileges to write SMC keys (controlling charging hardware).
-- App sandbox is enabled in entitlements but SMC access may require running with root or disabling sandbox for full functionality.
+- The app requires a privileged helper tool (installed via admin password prompt) to write SMC keys.
 - No third-party dependencies. Only system frameworks: IOKit, SwiftUI, AppKit.
+- On Apple Silicon, IOKit's `MaxCapacity`/`CurrentCapacity` return percentages, not mAh. Use `AppleRawMaxCapacity`/`AppleRawCurrentCapacity` for actual mAh values.
+- `@Observable` properties are NOT thread-safe — always snapshot state on main thread before dispatching to background queues.
 - Tests are placeholder stubs — no real test coverage yet.
