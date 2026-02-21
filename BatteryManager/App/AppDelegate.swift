@@ -229,7 +229,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Helper Install
 
-    private static let requiredHelperVersion = "2.2.0"
+    private static let requiredHelperVersion = "2.3.0"
 
     private func checkHelperVersion(smc: SMCService, installer: HelperInstaller) {
         let conn = NSXPCConnection(machServiceName: "com.batterymanager.helper", options: .privileged)

@@ -27,6 +27,8 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
     // Key capabilities detected at startup
     private var useTahoeCharging = false  // CHTE (4-byte) vs CH0B+CH0C (1-byte)
     private var useTahoeAdapter = false   // CHIE vs CH0I
+    private var hasCH0B = false
+    private var hasCH0I = false
 
     override init() {
         super.init()
@@ -50,10 +52,10 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
 
     /// Detect which SMC keys are available on this hardware
     private func detectCapabilities() {
-        let hasCH0B = canReadKey("CH0B")
+        hasCH0B = canReadKey("CH0B")
         let hasCH0C = canReadKey("CH0C")
         let hasCHTE = canReadKey("CHTE")
-        let hasCH0I = canReadKey("CH0I")
+        hasCH0I = canReadKey("CH0I")
         let hasCHIE = canReadKey("CHIE")
 
         if hasCHTE {
@@ -138,7 +140,7 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
     }
 
     func getVersion(reply: @escaping (String) -> Void) {
-        reply("2.2.0")
+        reply("2.3.0")
     }
 
     func readBatteryChargeLevel(reply: @escaping (UInt8) -> Void) {
@@ -172,22 +174,28 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
         smcQueue.sync {
             guard smcConnected else { reply(false); return }
 
+            var anySuccess = false
+
+            // Write ALL available charging keys for maximum compatibility
             if useTahoeCharging {
-                // Tahoe: CHTE is 4 bytes
-                let success: Bool
+                let s: Bool
                 if enabled {
-                    success = writeKey4Bytes("CHTE", b0: 0x00, b1: 0x00, b2: 0x00, b3: 0x00)
+                    s = writeKey4Bytes("CHTE", b0: 0x00, b1: 0x00, b2: 0x00, b3: 0x00)
                 } else {
-                    success = writeKey4Bytes("CHTE", b0: 0x01, b1: 0x00, b2: 0x00, b3: 0x00)
+                    s = writeKey4Bytes("CHTE", b0: 0x01, b1: 0x00, b2: 0x00, b3: 0x00)
                 }
-                reply(success)
-            } else {
-                // Pre-Tahoe: write both CH0B and CH0C
+                if s { anySuccess = true }
+            }
+
+            // Also write pre-Tahoe keys if available (some firmware responds to both)
+            if hasCH0B {
                 let value: UInt8 = enabled ? 0x00 : 0x02
                 let s1 = writeKey1Byte("CH0B", value: value)
                 let s2 = writeKey1Byte("CH0C", value: value)
-                reply(s1 && s2)
+                if s1 || s2 { anySuccess = true }
             }
+
+            reply(anySuccess)
         }
     }
 
@@ -195,17 +203,20 @@ final class SMCHelperDelegate: NSObject, NSXPCListenerDelegate, SMCHelperProtoco
         smcQueue.sync {
             guard smcConnected else { reply(false); return }
 
+            var anySuccess = false
+
+            // Write ALL available adapter keys
             if useTahoeAdapter {
-                // Tahoe: CHIE
                 let value: UInt8 = inhibit ? 0x08 : 0x00
-                let success = writeKey1Byte("CHIE", value: value)
-                reply(success)
-            } else {
-                // Pre-Tahoe: CH0I
-                let value: UInt8 = inhibit ? 0x01 : 0x00
-                let success = writeKey1Byte("CH0I", value: value)
-                reply(success)
+                if writeKey1Byte("CHIE", value: value) { anySuccess = true }
             }
+
+            if hasCH0I {
+                let value: UInt8 = inhibit ? 0x01 : 0x00
+                if writeKey1Byte("CH0I", value: value) { anySuccess = true }
+            }
+
+            reply(anySuccess)
         }
     }
 
