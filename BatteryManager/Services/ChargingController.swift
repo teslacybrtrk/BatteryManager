@@ -151,9 +151,11 @@ final class ChargingController {
     private func handleNormalMode(level: Int, limit: Int, preventSleep: Bool) {
         if level >= limit {
             disableCharging()
+            _ = smcService.setChargeInhibit(true)
             powerAssertionService?.allowSleep()
-            appLog("[ChargingController] Battery \(level)% >= limit \(limit)%, charging disabled")
+            appLog("[ChargingController] Battery \(level)% >= limit \(limit)%, charging disabled + inhibited")
         } else {
+            _ = smcService.setChargeInhibit(false)
             enableCharging()
             if preventSleep {
                 powerAssertionService?.preventSleep(reason: "Charging to limit")
