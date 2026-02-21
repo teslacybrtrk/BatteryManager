@@ -55,6 +55,8 @@
 		AA000037200000370AA00001 /* BuildInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000037200000370AA00000 /* BuildInfo.swift */; };
 		BB00001100000011000BB000 /* SMCHelperProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00000100000001000BB000 /* SMCHelperProtocol.swift */; };
 		BB00001200000012000BB000 /* HelperInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00000300000003000BB000 /* HelperInstaller.swift */; };
+		CC00000100000001000CC001 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00000100000001000CC000 /* AppLogger.swift */; };
+		CC00000200000002000CC001 /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC00000200000002000CC000 /* LogsView.swift */; };
 		BB00001300000013000BB000 /* com.batterymanager.helper.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB00000400000004000BB000 /* com.batterymanager.helper.plist */; };
 		BB00001400000014000BB000 /* com.batterymanager.helper in Copy Helpers */ = {isa = PBXBuildFile; fileRef = BB00000500000005000BB000 /* com.batterymanager.helper */; };
 		BB00002100000021000BB000 /* SMCHelperProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB00000100000001000BB000 /* SMCHelperProtocol.swift */; };
@@ -144,6 +146,8 @@
 		BB00000100000001000BB000 /* SMCHelperProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMCHelperProtocol.swift; sourceTree = "<group>"; };
 		BB00000200000002000BB000 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BB00000300000003000BB000 /* HelperInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperInstaller.swift; sourceTree = "<group>"; };
+		CC00000100000001000CC000 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		CC00000200000002000CC000 /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
 		BB00000400000004000BB000 /* com.batterymanager.helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "com.batterymanager.helper.plist"; sourceTree = "<group>"; };
 		BB00000500000005000BB000 /* com.batterymanager.helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "com.batterymanager.helper"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -264,6 +268,7 @@
 				AA000017200000170AA00000 /* MagSafeLEDService.swift */,
 				AA000036200000360AA00000 /* UpdateChecker.swift */,
 				BB00000300000003000BB000 /* HelperInstaller.swift */,
+				CC00000100000001000CC000 /* AppLogger.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -281,6 +286,7 @@
 				AA000025200000250AA00000 /* MenuBarIconManager.swift */,
 				AA000026200000260AA00000 /* SettingsView.swift */,
 				AA000027200000270AA00000 /* ScheduleView.swift */,
+				CC00000200000002000CC000 /* LogsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -603,6 +609,8 @@
 				AA000037200000370AA00001 /* BuildInfo.swift in Sources */,
 				BB00001100000011000BB000 /* SMCHelperProtocol.swift in Sources */,
 				BB00001200000012000BB000 /* HelperInstaller.swift in Sources */,
+				CC00000100000001000CC001 /* AppLogger.swift in Sources */,
+				CC00000200000002000CC001 /* LogsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
