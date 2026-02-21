@@ -5,27 +5,7 @@ struct LogsView: View {
     @State private var copied = false
 
     var body: some View {
-        VStack(spacing: 6) {
-            SectionHeader(title: "Debug Logs")
-
-            ScrollView {
-                Text(logText.isEmpty ? "No logs yet." : logText)
-                    .font(.system(size: 9, design: .monospaced))
-                    .foregroundStyle(.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .textSelection(.enabled)
-            }
-            .frame(height: 150)
-            .padding(6)
-            .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(Color(nsColor: .textBackgroundColor))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-            )
-
+        VStack(spacing: 8) {
             HStack(spacing: 8) {
                 Button {
                     logText = AppLogger.shared.allText()
@@ -34,7 +14,7 @@ struct LogsView: View {
                         Image(systemName: "arrow.clockwise")
                         Text("Refresh")
                     }
-                    .font(.system(size: 10))
+                    .font(.system(size: 11))
                 }
                 .buttonStyle(.bordered)
 
@@ -50,7 +30,7 @@ struct LogsView: View {
                         Image(systemName: copied ? "checkmark" : "doc.on.doc")
                         Text(copied ? "Copied!" : "Copy All")
                     }
-                    .font(.system(size: 10))
+                    .font(.system(size: 11))
                 }
                 .buttonStyle(.bordered)
 
@@ -64,11 +44,31 @@ struct LogsView: View {
                         Image(systemName: "trash")
                         Text("Clear")
                     }
-                    .font(.system(size: 10))
+                    .font(.system(size: 11))
                 }
                 .buttonStyle(.bordered)
             }
+
+            ScrollView {
+                Text(logText.isEmpty ? "No logs yet." : logText)
+                    .font(.system(size: 11, design: .monospaced))
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(8)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(Color(nsColor: .textBackgroundColor))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+            )
         }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             logText = AppLogger.shared.allText()
         }
