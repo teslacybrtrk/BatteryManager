@@ -3,18 +3,33 @@ import Foundation
 // MARK: - File Logger
 
 /// Logs to /tmp/batterymanager-helper.log so messages aren't redacted by macOS privacy
+private let helperLogPath = "/tmp/batterymanager-helper.log"
+private let helperLogMaxSize: UInt64 = 512 * 1024  // 512 KB
+private let helperLogTruncateKeep: Int = 200        // Keep last 200 lines after truncation
+
 private func helperLog(_ message: String) {
     let timestamp = ISO8601DateFormatter().string(from: Date())
     let line = "[\(timestamp)] \(message)\n"
     NSLog("%{public}s", message)
-    let path = "/tmp/batterymanager-helper.log"
-    if let handle = FileHandle(forWritingAtPath: path) {
+    if let handle = FileHandle(forWritingAtPath: helperLogPath) {
         handle.seekToEndOfFile()
         handle.write(Data(line.utf8))
+        let size = handle.offsetInFile
         handle.closeFile()
+        if size > helperLogMaxSize {
+            trimLogFile()
+        }
     } else {
-        FileManager.default.createFile(atPath: path, contents: Data(line.utf8))
+        FileManager.default.createFile(atPath: helperLogPath, contents: Data(line.utf8))
     }
+}
+
+private func trimLogFile() {
+    guard let data = FileManager.default.contents(atPath: helperLogPath),
+          let content = String(data: data, encoding: .utf8) else { return }
+    let lines = content.components(separatedBy: "\n")
+    let kept = lines.suffix(helperLogTruncateKeep).joined(separator: "\n")
+    try? kept.write(toFile: helperLogPath, atomically: true, encoding: .utf8)
 }
 
 // MARK: - SMC Helper Delegate
