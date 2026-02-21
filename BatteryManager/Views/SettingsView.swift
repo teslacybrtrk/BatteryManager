@@ -309,18 +309,24 @@ struct SettingsView: View {
     private func openLogsWindow() {
         let screen = NSScreen.main ?? NSScreen.screens.first
         let screenSize = screen?.visibleFrame.size ?? NSSize(width: 1440, height: 900)
-        let width = screenSize.width * 0.5
-        let height = screenSize.height * 0.5
+        let windowWidth = screenSize.width * 0.5
+        let windowHeight = screenSize.height * 0.5
+
+        let hostingController = NSHostingController(rootView: LogsView())
+        // Override SwiftUI's preferred content size
+        hostingController.preferredContentSize = NSSize(width: windowWidth, height: windowHeight)
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: width, height: height),
+            contentRect: NSRect(x: 0, y: 0, width: windowWidth, height: windowHeight),
             styleMask: [.titled, .closable, .resizable, .miniaturizable],
             backing: .buffered,
             defer: false
         )
         window.title = "BatteryManager Logs"
         window.minSize = NSSize(width: 400, height: 300)
-        window.contentViewController = NSHostingController(rootView: LogsView())
+        window.contentViewController = hostingController
+        // Force the window to our desired size after content is set
+        window.setContentSize(NSSize(width: windowWidth, height: windowHeight))
         window.center()
         window.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)
